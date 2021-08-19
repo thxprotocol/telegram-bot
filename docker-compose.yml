@@ -2,6 +2,8 @@ version: "3.4"
 
 services:
   thx_tg_bot:
+    env_file:
+      - .env
     build:
       context: .
       dockerfile: Dockerfile
