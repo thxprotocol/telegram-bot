@@ -7,4 +7,4 @@ WORKDIR $APP_HOME
 COPY . ./
 
 RUN pip install --upgrade pip
-RUN pip install -r ./thx_bot/requirements/requirements.txt
+RUN pip install -r ./thx_bot/requirements/requirements.txt -r ./thx_bot/requirements/dev-requirements.txt

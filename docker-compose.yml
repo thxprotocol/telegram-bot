@@ -7,5 +7,17 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-
+    volumes:
+      - ./:/thx_tg
+    depends_on:
+      - mongodb
     command: ["python", "thx_bot/main.py"]
+
+  mongodb:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+    ports:
+      - "27017:27017"
