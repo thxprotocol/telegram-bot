@@ -1,0 +1,46 @@
+/postgres-data/
+.pytest_cache/
+*.pyc
+*.pyo
+*.scssc
+*~
+*.DS_Store
+.coverage
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Editors
+.vscode
+.idea/
+.project
+.run
+*.swp
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+/.gtm/
+/certificates/ca.pem
+/certificates/service.cert
+/certificates/service.key
+.idea/inspectionProfiles/profiles_settings.xml
+.idea/inspectionProfiles/Project_Default.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/thx_tg_bot.iml
+.idea/vcs.xml

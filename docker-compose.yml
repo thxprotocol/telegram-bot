@@ -1,0 +1,9 @@
+version: "3.4"
+
+services:
+  thx_tg_bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    command: ["python", "thx_bot/main.py"]
