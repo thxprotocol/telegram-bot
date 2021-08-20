@@ -1,0 +1,4 @@
+from telegram.constants import CHATMEMBER_ADMINISTRATOR
+from telegram.constants import CHATMEMBER_CREATOR
+
+ADMIN_ROLES = [CHATMEMBER_CREATOR, CHATMEMBER_ADMINISTRATOR]
