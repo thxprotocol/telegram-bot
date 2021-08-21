@@ -1,5 +1,4 @@
 import logging
-from typing import Dict
 
 from pymongo import ReturnDocument
 from telegram import ReplyKeyboardMarkup
@@ -8,15 +7,15 @@ from telegram import Update
 from telegram.ext import CallbackContext
 from telegram.ext import ConversationHandler
 
+from thx_bot.commands import CHOOSING
+from thx_bot.commands import TYPING_REPLY
+from thx_bot.commands import user_data_to_str
 from thx_bot.models.channels import Channel
 from thx_bot.validators import only_chat_admin
 from thx_bot.validators import only_in_private_chat
 
 logger = logging.getLogger(__name__)
 
-
-CLIENT_ID, CLIENT_SECRET = range(2)
-CHOOSING, TYPING_REPLY = range(2)
 
 OPTION_CLIENT_ID = "Client id"
 OPTION_CLIENT_SECRET = "Client secret"
@@ -33,26 +32,17 @@ REPLY_OPTION_TO_DB_KEY = {
 MARKUP = ReplyKeyboardMarkup(REPLY_KEYBOARD, one_time_keyboard=True)
 
 
-NON_VISIBLE_KEYS = ["channel_id", "_id"]
-
-
-def _user_data_to_str(user_data: Dict[str, str]) -> str:
-    facts = [
-        f'➡️{key} - {value}' for key, value in user_data.items() if key not in NON_VISIBLE_KEYS
-    ]
-    return "\n".join(facts).join(['\n', '\n'])
-
-
 @only_chat_admin
 @only_in_private_chat
 def start_setting_channel(update: Update, context: CallbackContext) -> int:
-    reply_text = "Please, fill *ALL* items to start using THX API in your channel"
+    reply_text = "🛠 Please, fill *ALL* items to start using THX API in your channel\.\n\n" \
+                 "Hit *Done* button once you are done to test connection to THX API"
     update.message.reply_text(reply_text, parse_mode='MarkdownV2', reply_markup=MARKUP)
 
     return CHOOSING
 
 
-def regular_choice(update: Update, context: CallbackContext) -> int:
+def regular_choice_channel(update: Update, context: CallbackContext) -> int:
     text = update.message.text.lower()
     context.user_data['choice'] = text
     channel = Channel.collection.find_one({'channel_id': context.user_data['channel_id']})
@@ -68,7 +58,7 @@ def regular_choice(update: Update, context: CallbackContext) -> int:
     return TYPING_REPLY
 
 
-def received_information(update: Update, context: CallbackContext) -> int:
+def received_information_channel(update: Update, context: CallbackContext) -> int:
     text = update.message.text
     category = context.user_data['choice']
     context.user_data[category] = text.lower()
@@ -83,7 +73,7 @@ def received_information(update: Update, context: CallbackContext) -> int:
     )
     update.message.reply_text(
         "Cool! Your configuration is:"
-        f"{_user_data_to_str(channel)}"
+        f"{user_data_to_str(channel)}"
         "You can change client or secret any time.",
         reply_markup=MARKUP,
     )
@@ -91,13 +81,13 @@ def received_information(update: Update, context: CallbackContext) -> int:
     return CHOOSING
 
 
-def done(update: Update, context: CallbackContext) -> int:
+def done_channel(update: Update, context: CallbackContext) -> int:
     if 'choice' in context.user_data:
         del context.user_data['choice']
 
     channel = Channel.collection.find_one({'channel_id': context.user_data['channel_id']})
     update.message.reply_text(
-        f"Your configuration: {_user_data_to_str(channel)}\nYou can change configuration of your"
+        f"Your configuration: {user_data_to_str(channel)}\nYou can change configuration of your"
         f" channel any time. Just hit /register_channel again!",
         reply_markup=ReplyKeyboardRemove(),
     )
