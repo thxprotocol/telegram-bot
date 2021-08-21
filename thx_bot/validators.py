@@ -25,7 +25,9 @@ NOT_PRIVATE_CHAT_TEXT = """
 
 
 CHAT_NOT_CONFIGURED = """
-⛔️Chat is not yet configured by admin! Ask your chat admin to configure THX API.
+⛔️Chat is not yet configured or you were not redirected here from chat. 
+Navigate to your chat and hit /setup to be redirected here.
+If chat is not configured, ask your chat admin to do it!
 """
 
 
@@ -64,7 +66,9 @@ def only_chat_user(f):
 
         chat_member_status = context.bot.get_chat_member(
             int(chat_id), update.effective_user.id).status
-        if chat_member_status != CHATMEMBER_MEMBER:
+        allowed_roles = [*ADMIN_ROLES]
+        allowed_roles.append(CHATMEMBER_MEMBER)
+        if chat_member_status not in allowed_roles:
             update.message.reply_text(NOT_CHAT_MEMBER_TEST)
             return
         return f(update, context)

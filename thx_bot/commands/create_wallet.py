@@ -9,6 +9,7 @@ from thx_bot.commands import CHOOSING_SIGNUP
 from thx_bot.commands import TYPING_REPLY_SIGNUP
 from thx_bot.commands import user_data_to_str
 from thx_bot.models.users import User
+from thx_bot.validators import only_chat_user
 from thx_bot.validators import only_if_channel_configured
 from thx_bot.validators import only_in_private_chat
 
@@ -27,6 +28,7 @@ MARKUP = ReplyKeyboardMarkup(REPLY_KEYBOARD, one_time_keyboard=True)
 
 @only_in_private_chat
 @only_if_channel_configured
+@only_chat_user
 def start_creating_wallet(update: Update, context: CallbackContext) -> int:
     reply_text = "💰 Please, fill both email and password to start getting rewards!"
     update.message.reply_text(reply_text, reply_markup=MARKUP)
