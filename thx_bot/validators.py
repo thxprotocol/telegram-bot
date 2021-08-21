@@ -8,6 +8,7 @@ from telegram.ext import CallbackContext
 
 from thx_bot.constants import ADMIN_ROLES
 from thx_bot.models.channels import Channel
+from thx_bot.utils import is_channel_configured
 
 NOT_ADMIN_TEXT = """
 💬  You are not admin of the chat our group_id context is missing. 
@@ -95,10 +96,10 @@ def only_if_channel_configured(f):
         Allow to manipulate with configuration only in case admin has already set up channel
         """
         channel = Channel.collection.find_one({'channel_id': context.user_data.get('channel_id')})
-        is_channel_set = all([
-            channel.get('client_id'), channel.get('client_secret'), channel.get('pool_address')
-        ]) if channel else False
-        if not channel or not is_channel_set:
+        channel_obj = Channel(channel) if channel else None
+        is_channel_set = is_channel_configured(channel_obj) if channel else False
+
+        if not channel_obj or not is_channel_set:
             update.message.reply_text(CHAT_NOT_CONFIGURED)
             return
         return f(update, context)

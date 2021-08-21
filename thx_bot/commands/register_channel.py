@@ -12,6 +12,7 @@ from thx_bot.commands import TYPING_REPLY
 from thx_bot.commands import user_data_to_str
 from thx_bot.models.channels import Channel
 from thx_bot.services.thx_api_client import get_asset_pool_info
+from thx_bot.utils import is_channel_configured
 from thx_bot.validators import only_chat_admin
 from thx_bot.validators import only_in_private_chat
 
@@ -100,9 +101,7 @@ def check_connection_channel(update: Update, context: CallbackContext) -> int:
         del context.user_data['choice']
     channel = Channel.collection.find_one({'channel_id': context.user_data['channel_id']})
     # Check if channel is configured
-    if all([
-        channel.get('client_id'), channel.get('client_secret'), channel.get('pool_address')
-    ]):
+    if is_channel_configured(channel):
         status, __ = get_asset_pool_info(Channel(channel))
         if status == 200:
             update.message.reply_text(

@@ -45,7 +45,9 @@ def get_asset_pool_info(channel: Channel) -> Tuple[int, Dict[str, str]]:
     return response.status_code, response.json()
 
 
-def signup_user(user: User, channel: Channel) -> dict:
+def signup_user(user: User, channel: Channel) -> Tuple[int, Dict[str, str]]:
+    __, token_response = get_api_token(channel)
+    token = token_response['access_token']
     response = requests.post(
         URL_SIGNUP,
         data={
@@ -55,7 +57,7 @@ def signup_user(user: User, channel: Channel) -> dict:
         },
         headers={
             'AssetPool': channel.pool_address,
-            'Authorization': f"Bearer {get_api_token(channel)}",
+            'Authorization': f"Bearer {token}",
         },
     )
-    return response.json()
+    return response.status_code, response.json()

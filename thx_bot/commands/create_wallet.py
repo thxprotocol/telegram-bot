@@ -10,6 +10,7 @@ from thx_bot.commands import TYPING_REPLY_SIGNUP
 from thx_bot.commands import user_data_to_str
 from thx_bot.models.channels import Channel
 from thx_bot.models.users import User
+from thx_bot.services.thx_api_client import signup_user
 from thx_bot.validators import only_chat_user
 from thx_bot.validators import only_if_channel_configured
 from thx_bot.validators import only_in_private_chat
@@ -79,16 +80,37 @@ def done_signup(update: Update, context: CallbackContext) -> int:
     if 'choice' in context.user_data:
         del context.user_data['choice']
 
-    user = User.collection.find_one({'user_id': update.effective_user.id})
+    user = User(User.collection.find_one({'user_id': update.effective_user.id}))
     if not context.user_data.get('channel_id'):
         update.message.reply_text("⛔ Oops. Something is wrong with chat configuration. "
                                   "Please, contact your chat admin")
-    Channel.collection.find_one_and_update(
+    channel = Channel(Channel.collection.find_one_and_update(
         {'channel_id': context.user_data.get('channel_id')},
-        {'$addToSet': {'users': user['_id']}},
-    )
+        {'$addToSet': {'users': user._id}},
+        return_document=ReturnDocument.AFTER
+    ))
+    # If API returns !== 200, it means that user was already created in DB or something is wrong
+    # with configuration
+    status_code, response = signup_user(user, channel)
+    if status_code == 200:
+        user.address = response['address']
+        user.save()
+
     update.message.reply_text(
         f"Your configuration: {user_data_to_str(user)}\n",
         reply_markup=ReplyKeyboardRemove(),
     )
     return ConversationHandler.END
+
+# TODO: Get user checks
+# def check_signup(update: Update, context: CallbackContext) -> int:
+#     channel = Channel.collection.find_one(
+#         {'channel_id': context.user_data.get('channel_id')}
+#     )
+#     # Check that user was added to channel, so they can use chat secret to query API
+#     user = User.collection.find_one(
+#         {'user_id': update.effective_user.id, '_id': {'$in': channel.get('users')}},
+#     )
+#     if is_channel_configured(channel):
+#         pass
+#     return ConversationHandler.END
