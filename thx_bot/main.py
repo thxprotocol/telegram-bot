@@ -8,7 +8,6 @@ from telegram.ext import Updater
 
 from thx_bot.commands.help_command import help_command
 from thx_bot.commands.register_channel import CHOOSING
-from thx_bot.commands.register_channel import TYPING_CHOICE
 from thx_bot.commands.register_channel import TYPING_REPLY
 from thx_bot.commands.register_channel import done
 from thx_bot.commands.register_channel import received_information
@@ -32,11 +31,6 @@ def main() -> None:
                 MessageHandler(
                     Filters.regex('^(Client id|Client secret|Pool address)$'), regular_choice
                 ),
-            ],
-            TYPING_CHOICE: [
-                MessageHandler(
-                    Filters.text & ~(Filters.command | Filters.regex('^Done$')), regular_choice
-                )
             ],
             TYPING_REPLY: [
                 MessageHandler(

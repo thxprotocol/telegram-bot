@@ -1,6 +1,7 @@
 import logging
 from typing import Dict
 
+from pymongo import ReturnDocument
 from telegram import ReplyKeyboardMarkup
 from telegram import ReplyKeyboardRemove
 from telegram import Update
@@ -15,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 CLIENT_ID, CLIENT_SECRET = range(2)
-CHOOSING, TYPING_REPLY, TYPING_CHOICE = range(3)
+CHOOSING, TYPING_REPLY = range(2)
 
 OPTION_CLIENT_ID = "Client id"
 OPTION_CLIENT_SECRET = "Client secret"
@@ -71,9 +72,11 @@ def start_setting_channel(update: Update, context: CallbackContext) -> int:
 def regular_choice(update: Update, context: CallbackContext) -> int:
     text = update.message.text.lower()
     context.user_data['choice'] = text
-    if context.user_data.get(text):
+    channel = Channel.collection.find_one({'channel_id': context.user_data['channel_id']})
+    if channel.get(REPLY_OPTION_TO_DB_KEY[text]):
         reply_text = (
-            f'Your {text}? I already know the following about that: {context.user_data[text]}'
+            f"Your {text}? I already know the following about that: "
+            f"{channel.get(REPLY_OPTION_TO_DB_KEY[text])}"
         )
     else:
         reply_text = f'Your {text}? Yes, please feel it!'
@@ -88,17 +91,18 @@ def received_information(update: Update, context: CallbackContext) -> int:
     context.user_data[category] = text.lower()
     del context.user_data['choice']
 
-    update.message.reply_text(
-        "Cool! Your configuration is:"
-        f"{_user_data_to_str(context.user_data)}"
-        "You can change client or secret any time.",
-        reply_markup=MARKUP,
-    )
-    Channel.collection.find_one_and_update(
+    channel = Channel.collection.find_one_and_update(
         {'channel_id': context.user_data['channel_id']},
         {'$set': {REPLY_OPTION_TO_DB_KEY[category]: text}},
         # Create new document in case there is none
         upsert=True,
+        return_document=ReturnDocument.AFTER
+    )
+    update.message.reply_text(
+        "Cool! Your configuration is:"
+        f"{_user_data_to_str(channel)}"
+        "You can change client or secret any time.",
+        reply_markup=MARKUP,
     )
 
     return CHOOSING
