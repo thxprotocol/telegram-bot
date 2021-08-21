@@ -11,6 +11,7 @@ from thx_bot.commands import CHOOSING
 from thx_bot.commands import TYPING_REPLY
 from thx_bot.commands import user_data_to_str
 from thx_bot.models.channels import Channel
+from thx_bot.services.thx_api_client import get_asset_pool_info
 from thx_bot.validators import only_chat_admin
 from thx_bot.validators import only_in_private_chat
 
@@ -22,7 +23,7 @@ OPTION_CLIENT_SECRET = "Client secret"
 OPTION_POOL_ADDRESS = "Pool address"
 REPLY_KEYBOARD = [
     [OPTION_CLIENT_ID, OPTION_CLIENT_SECRET, OPTION_POOL_ADDRESS],
-    ['Done'],
+    ['Done', 'Test Connection'],
 ]
 REPLY_OPTION_TO_DB_KEY = {
     OPTION_CLIENT_ID.lower(): "client_id",
@@ -91,4 +92,25 @@ def done_channel(update: Update, context: CallbackContext) -> int:
         f" channel any time. Just hit /register_channel again!",
         reply_markup=ReplyKeyboardRemove(),
     )
+    return ConversationHandler.END
+
+
+def check_connection_channel(update: Update, context: CallbackContext) -> int:
+    if 'choice' in context.user_data:
+        del context.user_data['choice']
+    channel = Channel.collection.find_one({'channel_id': context.user_data['channel_id']})
+    # Check if channel is configured
+    if all([
+        channel.get('client_id'), channel.get('client_secret'), channel.get('pool_address')
+    ]):
+        status, __ = get_asset_pool_info(Channel(channel))
+        if status == 200:
+            update.message.reply_text(
+                "✨ ✨ ✨  Connection to THX is successful! You can now start using THX."
+            )
+        else:
+            update.message.reply_text(
+                "⛔⛔⛔  Oops. Something is wrong with configuration. "
+                "Please, check client id and secret"
+            )
     return ConversationHandler.END

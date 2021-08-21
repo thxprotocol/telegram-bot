@@ -1,4 +1,6 @@
 from base64 import b64encode
+from typing import Dict
+from typing import Tuple
 
 import requests
 
@@ -18,7 +20,7 @@ def get_token_auth_headers(client_id: str, client_secret: str) -> dict:
     }
 
 
-def get_api_token(channel: Channel) -> str:
+def get_api_token(channel: Channel) -> Tuple[int, Dict[str, str]]:
     response = requests.post(
         URL_GET_TOKEN,
         data={
@@ -27,18 +29,20 @@ def get_api_token(channel: Channel) -> str:
         },
         headers=get_token_auth_headers(channel.client_id, channel.client_secret)
     )
-    return response.json()['access_token']
+    return response.status_code, response.json()
 
 
-def get_asset_pool_info(channel: Channel) -> dict:
+def get_asset_pool_info(channel: Channel) -> Tuple[int, Dict[str, str]]:
+    __, token_response = get_api_token(channel)
+    token = token_response['access_token']
     response = requests.get(
         f"{URL_ASSET_POOL_INFO}{channel.pool_address}",
         headers={
             'Content-Type': "application/json",
-            'Authorization': f"Bearer {get_api_token(channel)}",
+            'Authorization': f"Bearer {token}",
         }
     )
-    return response.json()
+    return response.status_code, response.json()
 
 
 def signup_user(user: User, channel: Channel) -> dict:

@@ -13,15 +13,16 @@ from thx_bot.commands import CHOOSING
 from thx_bot.commands import CHOOSING_SIGNUP
 from thx_bot.commands import TYPING_REPLY
 from thx_bot.commands import TYPING_REPLY_SIGNUP
+from thx_bot.commands.create_wallet import done_signup
 from thx_bot.commands.create_wallet import received_information_signup
 from thx_bot.commands.create_wallet import regular_choice_signup
-from thx_bot.commands.create_wallet import done_signup
+from thx_bot.commands.create_wallet import start_creating_wallet
 from thx_bot.commands.help_command import help_command
 from thx_bot.commands.register_channel import done_channel
 from thx_bot.commands.register_channel import received_information_channel
 from thx_bot.commands.register_channel import regular_choice_channel
 from thx_bot.commands.register_channel import start_setting_channel
-from thx_bot.commands.create_wallet import start_creating_wallet
+from thx_bot.commands.register_channel import check_connection_channel
 from thx_bot.models.channels import Channel
 from thx_bot.models.users import User
 
@@ -54,7 +55,8 @@ def main() -> None:
         states={  # noqa
             CHOOSING: [
                 MessageHandler(
-                    Filters.regex('^(Client id|Client secret|Pool address)$'), regular_choice_channel
+                    Filters.regex('^(Client id|Client secret|Pool address)$'),
+                    regular_choice_channel
                 ),
             ],
             TYPING_REPLY: [
@@ -64,7 +66,10 @@ def main() -> None:
                 )
             ],
         },
-        fallbacks=[MessageHandler(Filters.regex('^Done$'), done_channel)],  # noqa
+        fallbacks=[   # noqa
+            MessageHandler(Filters.regex('^Done$'), done_channel),
+            MessageHandler(Filters.regex('^Test Connection$'), check_connection_channel),
+        ],
         name="register_channel",
         persistent=False,
     )
