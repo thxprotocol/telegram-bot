@@ -1,10 +1,13 @@
 import os
 
+from telegram import Update
+from telegram.ext import CallbackContext
 from telegram.ext import CommandHandler
 from telegram.ext import ConversationHandler
 from telegram.ext import Filters
 from telegram.ext import MessageHandler
 from telegram.ext import Updater
+from telegram.utils import helpers
 
 from thx_bot.commands.help_command import help_command
 from thx_bot.commands.register_channel import CHOOSING
@@ -14,9 +17,16 @@ from thx_bot.commands.register_channel import received_information
 from thx_bot.commands.register_channel import regular_choice
 from thx_bot.commands.register_channel import start
 from thx_bot.commands.register_channel import start_setting_channel
-from thx_bot.commands.register_channel import setup
 from thx_bot.models.channels import Channel
 from thx_bot.models.users import User
+
+
+def setup(update: Update, context: CallbackContext) -> None:
+    bot = context.bot
+
+    url = helpers.create_deep_linked_url(bot.username, str(update.effective_chat.id))
+    text = "Let's setup stuff:\n\n" + url
+    update.message.reply_text(text)
 
 
 def main() -> None:

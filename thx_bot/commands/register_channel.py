@@ -7,7 +7,6 @@ from telegram import ReplyKeyboardRemove
 from telegram import Update
 from telegram.ext import CallbackContext
 from telegram.ext import ConversationHandler
-from telegram.utils import helpers
 
 from thx_bot.models.channels import Channel
 from thx_bot.validators import only_chat_admin
@@ -42,14 +41,6 @@ def _user_data_to_str(user_data: Dict[str, str]) -> str:
         f'➡️{key} - {value}' for key, value in user_data.items() if key not in NON_VISIBLE_KEYS
     ]
     return "\n".join(facts).join(['\n', '\n'])
-
-
-def setup(update: Update, context: CallbackContext) -> None:
-    bot = context.bot
-
-    url = helpers.create_deep_linked_url(bot.username, str(update.effective_chat.id))
-    text = "Let's setup stuff:\n\n" + url
-    update.message.reply_text(text)
 
 
 def start(update: Update, context: CallbackContext) -> None:
