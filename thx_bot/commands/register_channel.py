@@ -11,6 +11,7 @@ from telegram.utils import helpers
 
 from thx_bot.models.channels import Channel
 from thx_bot.validators import only_chat_admin
+from thx_bot.validators import only_in_private_chat
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +44,6 @@ def _user_data_to_str(user_data: Dict[str, str]) -> str:
     return "\n".join(facts).join(['\n', '\n'])
 
 
-@only_chat_admin
 def setup(update: Update, context: CallbackContext) -> None:
     bot = context.bot
 
@@ -61,6 +61,7 @@ def start(update: Update, context: CallbackContext) -> None:
 
 
 @only_chat_admin
+@only_in_private_chat
 def start_setting_channel(update: Update, context: CallbackContext) -> int:
     reply_text = "Please, fill *ALL* items to start using THX API in your channel"
     update.message.reply_text(reply_text, parse_mode='MarkdownV2', reply_markup=MARKUP)
@@ -68,7 +69,6 @@ def start_setting_channel(update: Update, context: CallbackContext) -> int:
     return CHOOSING
 
 
-@only_chat_admin
 def regular_choice(update: Update, context: CallbackContext) -> int:
     text = update.message.text.lower()
     context.user_data['choice'] = text
