@@ -15,7 +15,6 @@ from thx_bot.commands.register_channel import TYPING_REPLY
 from thx_bot.commands.register_channel import done
 from thx_bot.commands.register_channel import received_information
 from thx_bot.commands.register_channel import regular_choice
-from thx_bot.commands.register_channel import start
 from thx_bot.commands.register_channel import start_setting_channel
 from thx_bot.models.channels import Channel
 from thx_bot.models.users import User
@@ -27,6 +26,14 @@ def setup(update: Update, context: CallbackContext) -> None:
     url = helpers.create_deep_linked_url(bot.username, str(update.effective_chat.id))
     text = "Let's setup stuff:\n\n" + url
     update.message.reply_text(text)
+
+
+def start(update: Update, context: CallbackContext) -> None:
+    reply_text = ("Hi, if you want to setup channel with THX API:\n /register_channel\n\n"
+                  "If you want to signup:\n /signup")
+    if context.args:
+        context.user_data['channel_id'] = context.args[0]
+    update.message.reply_text(reply_text)
 
 
 def main() -> None:

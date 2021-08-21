@@ -43,14 +43,6 @@ def _user_data_to_str(user_data: Dict[str, str]) -> str:
     return "\n".join(facts).join(['\n', '\n'])
 
 
-def start(update: Update, context: CallbackContext) -> None:
-    reply_text = ("Hi, if you want to setup channel with THX API:\n /register_channel\n\n"
-                  "If you want to signup:\n /signup")
-    if context.args:
-        context.user_data['channel_id'] = context.args[0]
-    update.message.reply_text(reply_text)
-
-
 @only_chat_admin
 @only_in_private_chat
 def start_setting_channel(update: Update, context: CallbackContext) -> int:
