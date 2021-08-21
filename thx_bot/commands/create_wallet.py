@@ -85,7 +85,7 @@ def done_signup(update: Update, context: CallbackContext) -> int:
                                   "Please, contact your chat admin")
     Channel.collection.find_one_and_update(
         {'channel_id': context.user_data.get('channel_id')},
-        {'$push': {'users': user['_id']}},
+        {'$addToSet': {'users': user['_id']}},
     )
     update.message.reply_text(
         f"Your configuration: {user_data_to_str(user)}\n",
