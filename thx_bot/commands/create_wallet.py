@@ -8,6 +8,7 @@ from telegram.ext import ConversationHandler
 from thx_bot.commands import CHOOSING_SIGNUP
 from thx_bot.commands import TYPING_REPLY_SIGNUP
 from thx_bot.commands import user_data_to_str
+from thx_bot.models.channels import Channel
 from thx_bot.models.users import User
 from thx_bot.validators import only_chat_user
 from thx_bot.validators import only_if_channel_configured
@@ -78,9 +79,16 @@ def done_signup(update: Update, context: CallbackContext) -> int:
     if 'choice' in context.user_data:
         del context.user_data['choice']
 
-    channel = User.collection.find_one({'user_id': update.effective_user.id})
+    user = User.collection.find_one({'user_id': update.effective_user.id})
+    if not context.user_data.get('channel_id'):
+        update.message.reply_text("⛔ Oops. Something is wrong with chat configuration. "
+                                  "Please, contact your chat admin")
+    Channel.collection.find_one_and_update(
+        {'channel_id': context.user_data.get('channel_id')},
+        {'$push': {'users': user['_id']}},
+    )
     update.message.reply_text(
-        f"Your configuration: {user_data_to_str(channel)}\n",
+        f"Your configuration: {user_data_to_str(user)}\n",
         reply_markup=ReplyKeyboardRemove(),
     )
     return ConversationHandler.END
