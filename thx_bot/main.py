@@ -13,12 +13,12 @@ from thx_bot.commands import CHOOSING
 from thx_bot.commands import CHOOSING_SIGNUP
 from thx_bot.commands import TYPING_REPLY
 from thx_bot.commands import TYPING_REPLY_SIGNUP
-from thx_bot.commands.create_wallet import check_signup
 from thx_bot.commands.create_wallet import done_signup
 from thx_bot.commands.create_wallet import received_information_signup
 from thx_bot.commands.create_wallet import regular_choice_signup
 from thx_bot.commands.create_wallet import start_creating_wallet
 from thx_bot.commands.help_command import help_command
+from thx_bot.commands.login_wallet import login_wallet
 from thx_bot.commands.register_channel import done_channel
 from thx_bot.commands.register_channel import received_information_channel
 from thx_bot.commands.register_channel import regular_choice_channel
@@ -47,7 +47,13 @@ def start(update: Update, context: CallbackContext) -> None:
 \/register\_channel
 
 *If you are channel user:*
+For signup:
 \/create\_wallet
+Send a one\-time login link for you wallet\(after signup is completed\)
+_Make sure to link your new wallet address with_ \/update\_wallet
+\/login\_wallet
+Link an existing THX wallet:
+\/update\_wallet
     """)
     if context.args:
         context.user_data['channel_id'] = context.args[0]
@@ -99,7 +105,6 @@ def main() -> None:
         },
         fallbacks=[  # noqa
             MessageHandler(Filters.regex('^Done$'), done_signup),
-            MessageHandler(Filters.regex('^Test$'), check_signup),
         ],  # noqa
         name="create_wallet",
         persistent=False,
@@ -108,12 +113,11 @@ def main() -> None:
     dispatcher.add_handler(create_wallet_conversation)
     dispatcher.add_handler(CommandHandler("setup", setup))
     dispatcher.add_handler(CommandHandler("start", start))
+    dispatcher.add_handler(CommandHandler("login_wallet", login_wallet))
     channels = Channel.collection.find({})
     users = User.collection.find({})
     print(list(channels))
     print(list(users))
-    # get_asset_pool_info(channel)
-    # signup_user(user, channel)
     updater.start_polling()
     updater.idle()
 

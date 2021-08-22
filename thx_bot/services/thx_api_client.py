@@ -8,11 +8,13 @@ from cryptography.fernet import Fernet
 
 from thx_bot.models.channels import Channel
 from thx_bot.models.users import User
+from thx_bot.utils import fernet
 
 URL_GET_TOKEN = "https://api.thx.network/token"
 URL_ASSET_POOL_INFO = "https://api.thx.network/v1/asset_pools/"
 URL_SIGNUP = "https://api.thx.network/v1/signup"
 MEMBERS_URL = "https://api.thx.network/v1/members/"
+ACTIVATION_URL = "https://api.thx.network/v1/authentication_token"
 
 
 def get_token_auth_headers(client_id: str, client_secret: str) -> dict:
@@ -50,7 +52,6 @@ def get_asset_pool_info(channel: Channel) -> Tuple[int, Dict[str, str]]:
 
 
 def signup_user(user: User, channel: Channel) -> Tuple[int, Dict[str, str]]:
-    fernet = Fernet(os.getenv("SECRET_KEY").encode())
     password = fernet.decrypt(user.password).decode()
     __, token_response = get_api_token(channel)
     token = token_response['access_token']
@@ -78,5 +79,38 @@ def get_member(user: User, channel: Channel) -> Tuple[int, Dict[str, str]]:
             'AssetPool': channel.pool_address,
             'Authorization': f"Bearer {token}",
         }
+    )
+    return response.status_code, response.json()
+
+
+def send_login_wallet(user: User, channel: Channel) -> Tuple[int, Dict[str, str]]:
+    password = fernet.decrypt(user.password).decode()
+    __, token_response = get_api_token(channel)
+    token = token_response['access_token']
+    response = requests.post(
+        ACTIVATION_URL,
+        data={
+            'email': user.email,
+            'password': password,
+        },
+        headers={
+            'Authorization': f"Bearer {token}",
+        },
+    )
+    return response.status_code, response.json()
+
+
+def send_update_wallet(user: User, channel: Channel, new_addr: str) -> Tuple[int, Dict[str, str]]:
+    __, token_response = get_api_token(channel)
+    token = token_response['access_token']
+    response = requests.patch(
+        f"{ACTIVATION_URL}{user.address}",
+        data={
+            'address': new_addr,
+        },
+        headers={
+            'AssetPool': channel.pool_address,
+            'Authorization': f"Bearer {token}",
+        },
     )
     return response.status_code, response.json()

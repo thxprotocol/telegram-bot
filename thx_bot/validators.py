@@ -38,7 +38,7 @@ USER_SIGNED_UP = """
 """
 
 USER_NOT_SIGNED_UP = """
-⛔️You can use this command yet. First you need to /signup !
+⛔️You can use this command yet. First you need to /create_wallet !
 """
 
 

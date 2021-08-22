@@ -23,7 +23,7 @@ OPTION_EMAIL = "Email"
 OPTION_PASSWORD = "Password"
 REPLY_KEYBOARD = [
     [OPTION_EMAIL, OPTION_PASSWORD],
-    ["Done", "Test"],
+    ["Done"],
 ]
 REPLY_OPTION_TO_DB_KEY = {
     OPTION_EMAIL.lower(): "email",
