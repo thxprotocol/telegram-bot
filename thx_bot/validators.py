@@ -8,7 +8,9 @@ from telegram.ext import CallbackContext
 
 from thx_bot.constants import ADMIN_ROLES
 from thx_bot.models.channels import Channel
+from thx_bot.models.users import User
 from thx_bot.utils import is_channel_configured
+from thx_bot.utils import is_user_signed_up
 
 NOT_ADMIN_TEXT = """
 💬  You are not admin of the chat our group_id context is missing. 
@@ -29,6 +31,14 @@ CHAT_NOT_CONFIGURED = """
 ⛔️Chat is not yet configured or you were not redirected here from chat. 
 Navigate to your chat and hit /setup to be redirected here.
 If chat is not configured, ask your chat admin to do it!
+"""
+
+USER_SIGNED_UP = """
+⛔️User already exists.
+"""
+
+USER_NOT_SIGNED_UP = """
+⛔️You can use this command yet. First you need to /signup !
 """
 
 
@@ -101,6 +111,42 @@ def only_if_channel_configured(f):
 
         if not channel_obj or not is_channel_set:
             update.message.reply_text(CHAT_NOT_CONFIGURED)
+            return
+        return f(update, context)
+    return wrapper
+
+
+def only_unregistered_users(f):
+    @wraps(f)
+    def wrapper(update: Update, context: CallbackContext):
+        """
+        Allow to run f function only to users who didn't sign up yet
+        """
+        channel = Channel.collection.find_one({'channel_id': context.user_data.get('channel_id')})
+        user = User.collection.find_one(
+            {'user_id': update.effective_user.id, '_id': {'$in': channel.get('users', [])}},
+        )
+        user_obj = User(user) if user else None
+        if is_user_signed_up(user_obj):
+            update.message.reply_text(USER_SIGNED_UP)
+            return
+        return f(update, context)
+    return wrapper
+
+
+def only_registered_users(f):
+    @wraps(f)
+    def wrapper(update: Update, context: CallbackContext):
+        """
+        Allow to run f function only to users who already signed up
+        """
+        channel = Channel.collection.find_one({'channel_id': context.user_data.get('channel_id')})
+        user = User.collection.find_one(
+            {'user_id': update.effective_user.id, '_id': {'$in': channel.get('users', [])}},
+        )
+        user_obj = User(user) if user else None
+        if not is_user_signed_up(user_obj):
+            update.message.reply_text(USER_NOT_SIGNED_UP)
             return
         return f(update, context)
     return wrapper

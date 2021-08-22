@@ -13,6 +13,7 @@ from thx_bot.commands import CHOOSING
 from thx_bot.commands import CHOOSING_SIGNUP
 from thx_bot.commands import TYPING_REPLY
 from thx_bot.commands import TYPING_REPLY_SIGNUP
+from thx_bot.commands.create_wallet import check_signup
 from thx_bot.commands.create_wallet import done_signup
 from thx_bot.commands.create_wallet import received_information_signup
 from thx_bot.commands.create_wallet import regular_choice_signup
@@ -38,11 +39,19 @@ def setup(update: Update, context: CallbackContext) -> None:
 
 
 def start(update: Update, context: CallbackContext) -> None:
-    reply_text = ("Hi, if you want to setup channel with THX API:\n /register_channel\n\n"
-                  "If you want to signup:\n /create_wallet")
+    reply_text = ("""
+🤖     🤖     🤖
+*Hi, let's start setting your environment\!*
+
+*Admin Actions:*
+\/register\_channel
+
+*If you are channel user:*
+\/create\_wallet
+    """)
     if context.args:
         context.user_data['channel_id'] = context.args[0]
-    update.message.reply_text(reply_text)
+    update.message.reply_text(reply_text, parse_mode='MarkdownV2')
 
 
 def main() -> None:
@@ -88,7 +97,10 @@ def main() -> None:
                 )
             ],
         },
-        fallbacks=[MessageHandler(Filters.regex('^Done$'), done_signup)],  # noqa
+        fallbacks=[  # noqa
+            MessageHandler(Filters.regex('^Done$'), done_signup),
+            MessageHandler(Filters.regex('^Test$'), check_signup),
+        ],  # noqa
         name="create_wallet",
         persistent=False,
     )

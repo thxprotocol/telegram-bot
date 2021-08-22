@@ -1,3 +1,6 @@
+import os
+
+from cryptography.fernet import Fernet
 from pymongo import ReturnDocument
 from telegram import ReplyKeyboardMarkup
 from telegram import ReplyKeyboardRemove
@@ -14,12 +17,13 @@ from thx_bot.services.thx_api_client import signup_user
 from thx_bot.validators import only_chat_user
 from thx_bot.validators import only_if_channel_configured
 from thx_bot.validators import only_in_private_chat
+from thx_bot.validators import only_unregistered_users
 
 OPTION_EMAIL = "Email"
 OPTION_PASSWORD = "Password"
 REPLY_KEYBOARD = [
     [OPTION_EMAIL, OPTION_PASSWORD],
-    ['Done'],
+    ["Done", "Test"],
 ]
 REPLY_OPTION_TO_DB_KEY = {
     OPTION_EMAIL.lower(): "email",
@@ -31,6 +35,7 @@ MARKUP = ReplyKeyboardMarkup(REPLY_KEYBOARD, one_time_keyboard=True)
 @only_in_private_chat
 @only_if_channel_configured
 @only_chat_user
+@only_unregistered_users
 def start_creating_wallet(update: Update, context: CallbackContext) -> int:
     reply_text = "💰 Please, fill both email and password to start getting rewards!"
     update.message.reply_text(reply_text, reply_markup=MARKUP)
@@ -42,13 +47,13 @@ def regular_choice_signup(update: Update, context: CallbackContext) -> int:
     text = update.message.text.lower()
     context.user_data['choice'] = text
     user = User.collection.find_one({'user_id': update.effective_user.id})
-    if user and user.get(REPLY_OPTION_TO_DB_KEY[text]):
+    if user and user.get(REPLY_OPTION_TO_DB_KEY[text]) and not text == OPTION_PASSWORD.lower():
         reply_text = (
             f"Your {text}? I already know the following about that: "
             f"{user.get(REPLY_OPTION_TO_DB_KEY[text])}"
         )
     else:
-        reply_text = f'Your {text}? Yes, please feel it!'
+        reply_text = f'Your {text}? Yes, please fill it!'
     update.message.reply_text(reply_text)
 
     return TYPING_REPLY_SIGNUP
@@ -60,6 +65,9 @@ def received_information_signup(update: Update, context: CallbackContext) -> int
     context.user_data[category] = text.lower()
     del context.user_data['choice']
 
+    if REPLY_OPTION_TO_DB_KEY[category] == "password":
+        fernet = Fernet(os.getenv("SECRET_KEY").encode())
+        text = fernet.encrypt(text.encode())
     user = User.collection.find_one_and_update(
         {'user_id': update.effective_user.id},
         {'$set': {REPLY_OPTION_TO_DB_KEY[category]: text}},
@@ -92,7 +100,7 @@ def done_signup(update: Update, context: CallbackContext) -> int:
     # If API returns !== 200, it means that user was already created in DB or something is wrong
     # with configuration
     status_code, response = signup_user(user, channel)
-    if status_code == 200:
+    if status_code == 201:
         user.address = response['address']
         user.save()
 
@@ -102,15 +110,26 @@ def done_signup(update: Update, context: CallbackContext) -> int:
     )
     return ConversationHandler.END
 
-# TODO: Get user checks
+#
+# @only_if_channel_configured
+# @only_registered_users
 # def check_signup(update: Update, context: CallbackContext) -> int:
 #     channel = Channel.collection.find_one(
 #         {'channel_id': context.user_data.get('channel_id')}
 #     )
 #     # Check that user was added to channel, so they can use chat secret to query API
 #     user = User.collection.find_one(
-#         {'user_id': update.effective_user.id, '_id': {'$in': channel.get('users')}},
+#         {'user_id': update.effective_user.id, '_id': {'$in': channel.get('users', [])}},
 #     )
-#     if is_channel_configured(channel):
-#         pass
+#     status_code, response = get_member(User(user), Channel(channel))
+#     if status_code == 200:
+#         update.message.reply_text(
+#             f"✨ ✨ ✨  Your user with wallet {response['address']} is attached to asset pool!\n"
+#             " You can claim rewards now!"
+#         )
+#     else:
+#         update.message.reply_text(
+#             "⛔⛔⛔  Oops. Something is wrong with configuration. "
+#             "Please, check you wallet address "
+#         )
 #     return ConversationHandler.END

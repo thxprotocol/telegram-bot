@@ -1,8 +1,10 @@
+import os
 from base64 import b64encode
 from typing import Dict
 from typing import Tuple
 
 import requests
+from cryptography.fernet import Fernet
 
 from thx_bot.models.channels import Channel
 from thx_bot.models.users import User
@@ -10,6 +12,7 @@ from thx_bot.models.users import User
 URL_GET_TOKEN = "https://api.thx.network/token"
 URL_ASSET_POOL_INFO = "https://api.thx.network/v1/asset_pools/"
 URL_SIGNUP = "https://api.thx.network/v1/signup"
+MEMBERS_URL = "https://api.thx.network/v1/members/"
 
 
 def get_token_auth_headers(client_id: str, client_secret: str) -> dict:
@@ -33,6 +36,7 @@ def get_api_token(channel: Channel) -> Tuple[int, Dict[str, str]]:
 
 
 def get_asset_pool_info(channel: Channel) -> Tuple[int, Dict[str, str]]:
+    # TODO: Handle case when there is error
     __, token_response = get_api_token(channel)
     token = token_response['access_token']
     response = requests.get(
@@ -46,18 +50,33 @@ def get_asset_pool_info(channel: Channel) -> Tuple[int, Dict[str, str]]:
 
 
 def signup_user(user: User, channel: Channel) -> Tuple[int, Dict[str, str]]:
+    fernet = Fernet(os.getenv("SECRET_KEY").encode())
+    password = fernet.decrypt(user.password).decode()
     __, token_response = get_api_token(channel)
     token = token_response['access_token']
     response = requests.post(
         URL_SIGNUP,
         data={
             'email': user.email,
-            'password': user.password,
-            'confirmPassword': user.password,
+            'password': password,
+            'confirmPassword': password,
         },
         headers={
             'AssetPool': channel.pool_address,
             'Authorization': f"Bearer {token}",
         },
+    )
+    return response.status_code, response.json()
+
+
+def get_member(user: User, channel: Channel) -> Tuple[int, Dict[str, str]]:
+    __, token_response = get_api_token(channel)
+    token = token_response['access_token']
+    response = requests.get(
+        f"{MEMBERS_URL}{user.address}",
+        headers={
+            'AssetPool': channel.pool_address,
+            'Authorization': f"Bearer {token}",
+        }
     )
     return response.status_code, response.json()

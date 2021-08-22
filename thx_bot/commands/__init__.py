@@ -3,7 +3,7 @@ from typing import Dict
 CHOOSING, TYPING_REPLY = range(2)
 CHOOSING_SIGNUP, TYPING_REPLY_SIGNUP = range(3, 5)
 
-NON_VISIBLE_KEYS = ["channel_id", "user_id", "_id", "users"]
+NON_VISIBLE_KEYS = ["channel_id", "user_id", "_id", "users", "password"]
 
 
 def user_data_to_str(user_data: Dict[str, str]) -> str:
