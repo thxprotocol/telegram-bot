@@ -100,13 +100,14 @@ def send_login_wallet(user: User, channel: Channel) -> Tuple[int, Dict[str, str]
     return response.status_code, response.json()
 
 
-def send_update_wallet(user: User, channel: Channel, new_addr: str) -> Tuple[int, Dict[str, str]]:
+def send_update_wallet(user: User, channel: Channel) -> Tuple[int, Dict[str, str]]:
     __, token_response = get_api_token(channel)
     token = token_response['access_token']
     response = requests.patch(
-        f"{ACTIVATION_URL}{user.address}",
+        f"{MEMBERS_URL}{user.address}",
         data={
-            'address': new_addr,
+            'address': user.new_address,
+            'isManager': False,
         },
         headers={
             'AssetPool': channel.pool_address,

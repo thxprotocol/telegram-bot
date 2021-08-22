@@ -45,6 +45,8 @@ def start_setting_channel(update: Update, context: CallbackContext) -> int:
     return CHOOSING
 
 
+@only_chat_admin
+@only_in_private_chat
 def regular_choice_channel(update: Update, context: CallbackContext) -> int:
     text = update.message.text.lower()
     context.user_data['choice'] = text
@@ -65,6 +67,8 @@ def regular_choice_channel(update: Update, context: CallbackContext) -> int:
     return TYPING_REPLY
 
 
+@only_chat_admin
+@only_in_private_chat
 def received_information_channel(update: Update, context: CallbackContext) -> int:
     text = update.message.text
     category = context.user_data['choice']
@@ -88,6 +92,8 @@ def received_information_channel(update: Update, context: CallbackContext) -> in
     return CHOOSING
 
 
+@only_chat_admin
+@only_in_private_chat
 def done_channel(update: Update, context: CallbackContext) -> int:
     if 'choice' in context.user_data:
         del context.user_data['choice']
@@ -102,6 +108,8 @@ def done_channel(update: Update, context: CallbackContext) -> int:
 
 
 @only_if_channel_configured
+@only_chat_admin
+@only_in_private_chat
 def check_connection_channel(update: Update, context: CallbackContext) -> int:
     if 'choice' in context.user_data:
         del context.user_data['choice']

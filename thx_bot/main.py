@@ -11,19 +11,25 @@ from telegram.utils import helpers
 
 from thx_bot.commands import CHOOSING
 from thx_bot.commands import CHOOSING_SIGNUP
+from thx_bot.commands import CHOOSING_WALLET_UPDATE
 from thx_bot.commands import TYPING_REPLY
 from thx_bot.commands import TYPING_REPLY_SIGNUP
+from thx_bot.commands import TYPING_REPLY_WALLET_UPDATE
 from thx_bot.commands.create_wallet import done_signup
 from thx_bot.commands.create_wallet import received_information_signup
 from thx_bot.commands.create_wallet import regular_choice_signup
 from thx_bot.commands.create_wallet import start_creating_wallet
 from thx_bot.commands.help_command import help_command
 from thx_bot.commands.login_wallet import login_wallet
+from thx_bot.commands.register_channel import check_connection_channel
 from thx_bot.commands.register_channel import done_channel
 from thx_bot.commands.register_channel import received_information_channel
 from thx_bot.commands.register_channel import regular_choice_channel
 from thx_bot.commands.register_channel import start_setting_channel
-from thx_bot.commands.register_channel import check_connection_channel
+from thx_bot.commands.update_wallet import done_wallet_update
+from thx_bot.commands.update_wallet import received_information_wallet_update
+from thx_bot.commands.update_wallet import regular_choice_wallet_update
+from thx_bot.commands.update_wallet import start_updating_wallet
 from thx_bot.models.channels import Channel
 from thx_bot.models.users import User
 
@@ -109,8 +115,30 @@ def main() -> None:
         name="create_wallet",
         persistent=False,
     )
+    update_wallet_conversation = ConversationHandler(
+        entry_points=[CommandHandler('update_wallet', start_updating_wallet)],  # noqa
+        states={  # noqa
+            CHOOSING_WALLET_UPDATE: [
+                MessageHandler(
+                    Filters.regex('^Wallet Update$'), regular_choice_wallet_update
+                ),
+            ],
+            TYPING_REPLY_WALLET_UPDATE: [
+                MessageHandler(
+                    Filters.text & ~(Filters.command | Filters.regex('^Done$')),
+                    received_information_wallet_update,
+                )
+            ],
+        },
+        fallbacks=[  # noqa
+            MessageHandler(Filters.regex('^Done$'), done_wallet_update),
+        ],  # noqa
+        name="update_wallet",
+        persistent=False,
+    )
     dispatcher.add_handler(register_channel_conversation)
     dispatcher.add_handler(create_wallet_conversation)
+    dispatcher.add_handler(update_wallet_conversation)
     dispatcher.add_handler(CommandHandler("setup", setup))
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("login_wallet", login_wallet))

@@ -43,6 +43,10 @@ def start_creating_wallet(update: Update, context: CallbackContext) -> int:
     return CHOOSING_SIGNUP
 
 
+@only_in_private_chat
+@only_if_channel_configured
+@only_chat_user
+@only_unregistered_users
 def regular_choice_signup(update: Update, context: CallbackContext) -> int:
     text = update.message.text.lower()
     context.user_data['choice'] = text
@@ -59,6 +63,10 @@ def regular_choice_signup(update: Update, context: CallbackContext) -> int:
     return TYPING_REPLY_SIGNUP
 
 
+@only_in_private_chat
+@only_if_channel_configured
+@only_chat_user
+@only_unregistered_users
 def received_information_signup(update: Update, context: CallbackContext) -> int:
     text = update.message.text
     category = context.user_data['choice']
@@ -84,6 +92,10 @@ def received_information_signup(update: Update, context: CallbackContext) -> int
     return CHOOSING_SIGNUP
 
 
+@only_in_private_chat
+@only_if_channel_configured
+@only_chat_user
+@only_unregistered_users
 def done_signup(update: Update, context: CallbackContext) -> int:
     if 'choice' in context.user_data:
         del context.user_data['choice']
