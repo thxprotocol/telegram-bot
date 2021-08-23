@@ -21,6 +21,7 @@ from thx_bot.commands.create_wallet import regular_choice_signup
 from thx_bot.commands.create_wallet import start_creating_wallet
 from thx_bot.commands.help_command import help_command
 from thx_bot.commands.login_wallet import login_wallet
+from thx_bot.commands.pool_rewards import pool_rewards_command
 from thx_bot.commands.register_channel import check_connection_channel
 from thx_bot.commands.register_channel import done_channel
 from thx_bot.commands.register_channel import received_information_channel
@@ -51,6 +52,7 @@ def start(update: Update, context: CallbackContext) -> None:
 
 *Admin Actions:*
 \/register\_channel
+\/see\_rewards
 
 *If you are channel user:*
 For signup:
@@ -142,6 +144,7 @@ def main() -> None:
     dispatcher.add_handler(CommandHandler("setup", setup))
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("login_wallet", login_wallet))
+    dispatcher.add_handler(CommandHandler("see_rewards", pool_rewards_command))
     channels = Channel.collection.find({})
     users = User.collection.find({})
     print(list(channels))
