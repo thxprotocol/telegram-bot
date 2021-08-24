@@ -54,7 +54,7 @@ def get_asset_pool_info(channel: Channel) -> Tuple[int, Dict[str, str]]:
 
 
 def get_pool_rewards(
-        channel: Channel, reward_id: Optional[int]) -> Tuple[int, List[Dict[str, str]]]:
+        channel: Channel, reward_id: Optional[int] = None) -> Tuple[int, List[Dict[str, str]]]:
     __, token_response = get_api_token(channel)
     token = token_response['access_token']
     url = f"{URL_POOL_REWARDS}{reward_id}" if reward_id else URL_POOL_REWARDS
