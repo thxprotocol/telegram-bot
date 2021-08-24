@@ -51,8 +51,12 @@ def start(update: Update, context: CallbackContext) -> None:
 *Hi, let's start setting your environment\!*
 
 *Admin Actions:*
+Connect your channel to work with THX API
 \/register\_channel
+Show all rewards available for your asset pool
 \/see\_rewards
+Set reward to be given by this bot to your users
+\/set\_reward
 
 *If you are channel user:*
 For signup:
