@@ -13,6 +13,7 @@ from thx_bot.utils import fernet
 URL_GET_TOKEN = "https://api.thx.network/token"
 URL_ASSET_POOL_INFO = "https://api.thx.network/v1/asset_pools/"
 URL_POOL_REWARDS = "https://api.thx.network/v1/rewards/"
+URL_WITHDRAW = "https://api.thx.network/v1/withdrawals/"
 URL_SIGNUP = "https://api.thx.network/v1/signup"
 MEMBERS_URL = "https://api.thx.network/v1/members/"
 ACTIVATION_URL = "https://api.thx.network/v1/authentication_token"
@@ -61,6 +62,37 @@ def get_pool_rewards(
         url,
         headers={
             'Content-Type': "application/json",
+            'AssetPool': channel.pool_address,
+            'Authorization': f"Bearer {token}",
+        }
+    )
+    return response.status_code, response.json()
+
+
+def give_reward(user: User, channel: Channel) -> Tuple[int, Dict[str, str]]:
+    __, token_response = get_api_token(channel)
+    token = token_response['access_token']
+    url = f"{URL_POOL_REWARDS}{channel.reward}/give"
+    response = requests.post(
+        url,
+        data={
+            'member': user.address,
+        },
+        headers={
+            'AssetPool': channel.pool_address,
+            'Authorization': f"Bearer {token}",
+        }
+    )
+    return response.status_code, response.json()
+
+
+def create_withdraw(channel: Channel, withdrawal: str) -> Tuple[int, Dict[str, str]]:
+    __, token_response = get_api_token(channel)
+    token = token_response['access_token']
+    url = f"{URL_WITHDRAW}{withdrawal}/withdraw"
+    response = requests.post(
+        url,
+        headers={
             'AssetPool': channel.pool_address,
             'Authorization': f"Bearer {token}",
         }
@@ -124,7 +156,7 @@ def send_update_wallet(user: User, channel: Channel) -> Tuple[int, Dict[str, str
         f"{MEMBERS_URL}{user.address}",
         data={
             'address': user.new_address,
-            'isManager': False,
+            'isManager': user.is_admin,
         },
         headers={
             'AssetPool': channel.pool_address,

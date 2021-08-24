@@ -22,6 +22,7 @@ from thx_bot.commands.create_wallet import received_information_signup
 from thx_bot.commands.create_wallet import regular_choice_signup
 from thx_bot.commands.create_wallet import start_creating_wallet
 from thx_bot.commands.help_command import help_command
+from thx_bot.commands.login_wallet import give_reward_command
 from thx_bot.commands.login_wallet import login_wallet
 from thx_bot.commands.pool_rewards import done_rewards
 from thx_bot.commands.pool_rewards import pool_rewards_command
@@ -176,6 +177,9 @@ def main() -> None:
     dispatcher.add_handler(CommandHandler("setup", setup))
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("login_wallet", login_wallet))
+    dispatcher.add_handler(CommandHandler("get_reward", give_reward_command))
+    # channels = Channel.collection.remove({})
+    # users = User.collection.remove({})
     channels = Channel.collection.find({})
     users = User.collection.find({})
     print(list(channels))

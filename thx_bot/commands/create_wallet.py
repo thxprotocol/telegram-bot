@@ -11,6 +11,7 @@ from telegram.ext import ConversationHandler
 from thx_bot.commands import CHOOSING_SIGNUP
 from thx_bot.commands import TYPING_REPLY_SIGNUP
 from thx_bot.commands import user_data_to_str
+from thx_bot.constants import ADMIN_ROLES
 from thx_bot.models.channels import Channel
 from thx_bot.models.users import User
 from thx_bot.services.thx_api_client import signup_user
@@ -109,7 +110,15 @@ def done_signup(update: Update, context: CallbackContext) -> int:
         {'$addToSet': {'users': user._id}},
         return_document=ReturnDocument.AFTER
     ))
-    # If API returns !== 200, it means that user was already created in DB or something is wrong
+    # Assign this user to admin role if they are chat admin
+    chat_member_status = context.bot.get_chat_member(
+        int(context.user_data.get('channel_id')), update.effective_user.id).status
+    if chat_member_status in ADMIN_ROLES:
+        user.is_admin = True
+    else:
+        user.is_admin = False
+    user.save()
+    # If API returns !== 201, it means that user was already created in DB or something is wrong
     # with configuration
     status_code, response = signup_user(user, channel)
     if status_code == 201:
