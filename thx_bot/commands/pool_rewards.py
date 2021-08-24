@@ -82,12 +82,13 @@ def done_rewards(update: Update, context: CallbackContext) -> int:
     if 'choice' in context.user_data:
         del context.user_data['choice']
 
-    channel = Channel.collection.find_one({'channel_id': context.user_data['channel_id']})
-    if channel.get('reward'):
-        reply = f"You have set reward with ID {channel.get('reward')} your channel. " \
-                f"User in your channel now can receive rewards!"
-    else:
-        reply = f"Please, specify reward ID so users can start claiming rewards!"
+    channel = Channel(Channel.collection.find_one({'channel_id': context.user_data['channel_id']}))
+    reply = "Please, specify valid reward ID so users can start claiming rewards!"
+    if getattr(channel, "reward"):
+        status, __ = get_pool_rewards(channel, channel.reward)
+        if status == 200:
+            reply = f"You have set reward with ID {channel.reward} your channel. " \
+                    f"User in your channel now can receive rewards!"
     update.message.reply_text(
         reply,
         reply_markup=ReplyKeyboardRemove(),
