@@ -1,8 +1,9 @@
 from typing import Dict
 
 CHOOSING, TYPING_REPLY = range(2)
+CHOOSING_REWARDS, TYPING_REWARD_REPLY = range(7, 9)
 CHOOSING_SIGNUP, TYPING_REPLY_SIGNUP = range(3, 5)
-CHOOSING_WALLET_UPDATE, TYPING_REPLY_WALLET_UPDATE = range(5,7)
+CHOOSING_WALLET_UPDATE, TYPING_REPLY_WALLET_UPDATE = range(5, 7)
 
 
 NON_VISIBLE_KEYS = ["channel_id", "user_id", "_id", "users", "password"]

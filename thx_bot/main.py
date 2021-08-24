@@ -10,18 +10,24 @@ from telegram.ext import Updater
 from telegram.utils import helpers
 
 from thx_bot.commands import CHOOSING
+from thx_bot.commands import CHOOSING_REWARDS
 from thx_bot.commands import CHOOSING_SIGNUP
 from thx_bot.commands import CHOOSING_WALLET_UPDATE
 from thx_bot.commands import TYPING_REPLY
 from thx_bot.commands import TYPING_REPLY_SIGNUP
 from thx_bot.commands import TYPING_REPLY_WALLET_UPDATE
+from thx_bot.commands import TYPING_REWARD_REPLY
 from thx_bot.commands.create_wallet import done_signup
 from thx_bot.commands.create_wallet import received_information_signup
 from thx_bot.commands.create_wallet import regular_choice_signup
 from thx_bot.commands.create_wallet import start_creating_wallet
 from thx_bot.commands.help_command import help_command
 from thx_bot.commands.login_wallet import login_wallet
+from thx_bot.commands.pool_rewards import done_rewards
 from thx_bot.commands.pool_rewards import pool_rewards_command
+from thx_bot.commands.pool_rewards import received_information_reward
+from thx_bot.commands.pool_rewards import regular_choice_reward
+from thx_bot.commands.pool_rewards import rewards_entrypoint
 from thx_bot.commands.register_channel import check_connection_channel
 from thx_bot.commands.register_channel import done_channel
 from thx_bot.commands.register_channel import received_information_channel
@@ -53,10 +59,8 @@ def start(update: Update, context: CallbackContext) -> None:
 *Admin Actions:*
 Connect your channel to work with THX API
 \/register\_channel
-Show all rewards available for your asset pool
-\/see\_rewards
-Set reward to be given by this bot to your users
-\/set\_reward
+Rewards menu, to view and set rewards for your channel
+\/rewards
 
 *If you are channel user:*
 For signup:
@@ -142,13 +146,36 @@ def main() -> None:
         name="update_wallet",
         persistent=False,
     )
+
+    rewards_conversation = ConversationHandler(
+        entry_points=[CommandHandler('rewards', rewards_entrypoint)],  # noqa
+        states={  # noqa
+            CHOOSING_REWARDS: [
+                MessageHandler(
+                    Filters.regex('^Set Reward$'), regular_choice_reward
+                ),
+            ],
+            TYPING_REWARD_REPLY: [
+                MessageHandler(
+                    Filters.text & ~(Filters.command | Filters.regex('^Done$')),
+                    received_information_reward,
+                )
+            ],
+        },
+        fallbacks=[  # noqa
+            MessageHandler(Filters.regex('^Done$'), done_rewards),
+            MessageHandler(Filters.regex('^Show rewards$'), pool_rewards_command),
+        ],  # noqa
+        name="rewards",
+        persistent=False,
+    )
     dispatcher.add_handler(register_channel_conversation)
+    dispatcher.add_handler(rewards_conversation)
     dispatcher.add_handler(create_wallet_conversation)
     dispatcher.add_handler(update_wallet_conversation)
     dispatcher.add_handler(CommandHandler("setup", setup))
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("login_wallet", login_wallet))
-    dispatcher.add_handler(CommandHandler("see_rewards", pool_rewards_command))
     channels = Channel.collection.find({})
     users = User.collection.find({})
     print(list(channels))

@@ -12,7 +12,6 @@ from thx_bot.commands import TYPING_REPLY
 from thx_bot.commands import user_data_to_str
 from thx_bot.models.channels import Channel
 from thx_bot.services.thx_api_client import get_asset_pool_info
-from thx_bot.utils import is_channel_configured
 from thx_bot.validators import only_chat_admin
 from thx_bot.validators import only_if_channel_configured
 from thx_bot.validators import only_in_private_chat
@@ -61,7 +60,7 @@ def regular_choice_channel(update: Update, context: CallbackContext) -> int:
             f"{channel.get(REPLY_OPTION_TO_DB_KEY[text])}"
         )
     else:
-        reply_text = f'Your {text}? Yes, please feel it!'
+        reply_text = f'Your {text}? Yes, please fill it!'
     update.message.reply_text(reply_text)
 
     return TYPING_REPLY
