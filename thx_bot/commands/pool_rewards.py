@@ -8,11 +8,15 @@ from telegram.ext import ConversationHandler
 from thx_bot.commands import CHOOSING_REWARDS
 from thx_bot.commands import TYPING_REWARD_REPLY
 from thx_bot.models.channels import Channel
+from thx_bot.models.users import User
+from thx_bot.services.thx_api_client import create_withdraw
 from thx_bot.services.thx_api_client import get_asset_pool_info
 from thx_bot.services.thx_api_client import get_pool_rewards
+from thx_bot.services.thx_api_client import give_reward
 from thx_bot.validators import only_chat_admin
 from thx_bot.validators import only_if_channel_configured
 from thx_bot.validators import only_in_private_chat
+from thx_bot.validators import only_registered_users
 
 OPTION_SHOW_REWARDS = "Show rewards"
 OPTION_SET_REWARD = "Set Reward"
@@ -43,9 +47,6 @@ def rewards_entrypoint(update: Update, context: CallbackContext) -> int:
 def regular_choice_reward(update: Update, context: CallbackContext) -> int:
     text = update.message.text.lower()
     context.user_data['choice'] = text
-    channel = Channel.collection.find_one(
-        {'channel_id': context.user_data['channel_id']}
-    )
     reply_text = "Please, specify reward ID that will be used for you chat:"
     update.message.reply_text(reply_text)
 
@@ -114,3 +115,21 @@ def pool_rewards_command(update: Update, context: CallbackContext) -> None:
         rewards += f"ID: {reward['id']} - rewards size: {reward['withdrawAmount']} {token}\n"
     update.message.reply_text(rewards)
     return ConversationHandler.END
+
+
+@only_if_channel_configured
+@only_registered_users
+@only_in_private_chat
+def give_reward_command(update: Update, context: CallbackContext) -> None:
+    channel = Channel(
+        Channel.collection.find_one({'channel_id': context.user_data.get('channel_id')})
+    )
+    status, response = give_reward(
+        User(User.collection.find_one({'user_id': update.effective_user.id})),
+        channel,
+    )
+    withdrawal = response['withdrawal']
+    status, response = create_withdraw(channel=channel, withdrawal=withdrawal)
+    update.message.reply_text(
+        "HERE IS YOUR REWARD"
+    )
