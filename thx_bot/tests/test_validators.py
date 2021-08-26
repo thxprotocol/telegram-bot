@@ -13,10 +13,13 @@ from telegram.constants import CHAT_SUPERGROUP
 
 from thx_bot.constants import ADMIN_ROLES
 from thx_bot.models.channels import Channel
+from thx_bot.models.users import User
 from thx_bot.validators import only_chat_admin
 from thx_bot.validators import only_chat_user
 from thx_bot.validators import only_if_channel_configured
 from thx_bot.validators import only_in_private_chat
+from thx_bot.validators import only_registered_users
+from thx_bot.validators import only_unregistered_users
 
 
 @only_chat_admin
@@ -36,6 +39,16 @@ def only_private_chat_test_function(_, __) -> bool:
 
 @only_if_channel_configured
 def only_if_channel_configured_test_function(_, __) -> bool:
+    return True
+
+
+@only_unregistered_users
+def only_unregistered_users_function(_, __) -> bool:
+    return True
+
+
+@only_registered_users
+def only_registered_users_function(_, __) -> bool:
     return True
 
 
@@ -116,3 +129,47 @@ def test_only_if_channel_configured_unhappy_path(with_db):
     )
     channel.save()
     assert not only_if_channel_configured_test_function(update, context)
+
+
+@pytest.mark.parametrize(
+    "func, expected_output",
+    [
+        (only_unregistered_users_function, True),
+        (only_registered_users_function, None),
+    ]
+)
+def test_unregistered_users(with_db, func, expected_output):
+    update = MagicMock(effective_user=MagicMock(id=1))
+    context = MagicMock(user_data={'channel_id': 1})
+    # User without address is considered unregistered
+    user = User(
+        user_id=1, email="test@gmail.com", password="qwerty"
+    )
+    user.save()
+    channel = Channel(
+        client_id=1, channel_id=1, client_secret="somes_secret", users=[user._id]
+    )
+    channel.save()
+    assert func(update, context) == expected_output
+
+
+@pytest.mark.parametrize(
+    "func, expected_output",
+    [
+        (only_unregistered_users_function, None),
+        (only_registered_users_function, True),
+    ]
+)
+def test_registered_users(with_db, func, expected_output):
+    update = MagicMock(effective_user=MagicMock(id=1))
+    context = MagicMock(user_data={'channel_id': 1})
+    # User without address is considered unregistered
+    user = User(
+        user_id=1, email="test@gmail.com", password="qwerty", address="0x123123123123123123"
+    )
+    user.save()
+    channel = Channel(
+        client_id=1, channel_id=1, client_secret="somes_secret", users=[user._id]
+    )
+    channel.save()
+    assert func(update, context) == expected_output
