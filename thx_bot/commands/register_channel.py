@@ -19,6 +19,10 @@ from thx_bot.validators import only_in_private_chat
 logger = logging.getLogger(__name__)
 
 
+CONNECTION_SUCCESSFUL = "✨ ✨ ✨  Connection to THX is successful! You can now start using THX."
+CONNECTION_FAILED = "⛔⛔⛔  Oops. Something is wrong with configuration. " \
+                    "Please, check client id and secret"
+
 OPTION_CLIENT_ID = "Client id"
 OPTION_CLIENT_SECRET = "Client secret"
 OPTION_POOL_ADDRESS = "Pool address"
@@ -48,6 +52,10 @@ def start_setting_channel(update: Update, context: CallbackContext) -> int:
 @only_in_private_chat
 def regular_choice_channel(update: Update, context: CallbackContext) -> int:
     text = update.message.text.lower()
+    # In case user typed incorrect answer
+    if text not in REPLY_OPTION_TO_DB_KEY.keys():
+        update.message.reply_text("Unknown choice. Please, click on inline buttons with choices")
+        return ConversationHandler.END
     context.user_data['choice'] = text
     channel = Channel.collection.find_one_and_update(
         {'channel_id': context.user_data['channel_id']},
@@ -115,12 +123,7 @@ def check_connection_channel(update: Update, context: CallbackContext) -> int:
     channel = Channel.collection.find_one({'channel_id': context.user_data['channel_id']})
     status, __ = get_asset_pool_info(Channel(channel))
     if status == 200:
-        update.message.reply_text(
-            "✨ ✨ ✨  Connection to THX is successful! You can now start using THX."
-        )
+        update.message.reply_text(CONNECTION_SUCCESSFUL)
     else:
-        update.message.reply_text(
-            "⛔⛔⛔  Oops. Something is wrong with configuration. "
-            "Please, check client id and secret"
-        )
+        update.message.reply_text(CONNECTION_FAILED)
     return ConversationHandler.END

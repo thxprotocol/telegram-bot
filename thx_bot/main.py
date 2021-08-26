@@ -22,9 +22,9 @@ from thx_bot.commands.create_wallet import received_information_signup
 from thx_bot.commands.create_wallet import regular_choice_signup
 from thx_bot.commands.create_wallet import start_creating_wallet
 from thx_bot.commands.help_command import help_command
-from thx_bot.commands.login_wallet import give_reward_command
 from thx_bot.commands.login_wallet import login_wallet
 from thx_bot.commands.pool_rewards import done_rewards
+from thx_bot.commands.pool_rewards import give_reward_command
 from thx_bot.commands.pool_rewards import pool_rewards_command
 from thx_bot.commands.pool_rewards import received_information_reward
 from thx_bot.commands.pool_rewards import regular_choice_reward
