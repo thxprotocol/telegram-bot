@@ -15,6 +15,7 @@ from thx_bot.constants import ADMIN_ROLES
 from thx_bot.models.channels import Channel
 from thx_bot.models.users import User
 from thx_bot.services.thx_api_client import signup_user
+from thx_bot.utils import fernet
 from thx_bot.validators import only_chat_user
 from thx_bot.validators import only_if_channel_configured
 from thx_bot.validators import only_in_private_chat
@@ -50,6 +51,9 @@ def start_creating_wallet(update: Update, context: CallbackContext) -> int:
 @only_unregistered_users
 def regular_choice_signup(update: Update, context: CallbackContext) -> int:
     text = update.message.text.lower()
+    if text not in REPLY_OPTION_TO_DB_KEY.keys():
+        update.message.reply_text("Unknown choice. Please, click on inline buttons with choices")
+        return ConversationHandler.END
     context.user_data['choice'] = text
     user = User.collection.find_one({'user_id': update.effective_user.id})
     if user and user.get(REPLY_OPTION_TO_DB_KEY[text]) and not text == OPTION_PASSWORD.lower():
@@ -75,7 +79,6 @@ def received_information_signup(update: Update, context: CallbackContext) -> int
     del context.user_data['choice']
 
     if REPLY_OPTION_TO_DB_KEY[category] == "password":
-        fernet = Fernet(os.getenv("SECRET_KEY").encode())
         text = fernet.encrypt(text.encode())
     user = User.collection.find_one_and_update(
         {'user_id': update.effective_user.id},
@@ -102,9 +105,6 @@ def done_signup(update: Update, context: CallbackContext) -> int:
         del context.user_data['choice']
 
     user = User(User.collection.find_one({'user_id': update.effective_user.id}))
-    if not context.user_data.get('channel_id'):
-        update.message.reply_text("⛔ Oops. Something is wrong with chat configuration. "
-                                  "Please, contact your chat admin")
     channel = Channel(Channel.collection.find_one_and_update(
         {'channel_id': context.user_data.get('channel_id')},
         {'$addToSet': {'users': user._id}},
@@ -113,10 +113,8 @@ def done_signup(update: Update, context: CallbackContext) -> int:
     # Assign this user to admin role if they are chat admin
     chat_member_status = context.bot.get_chat_member(
         int(context.user_data.get('channel_id')), update.effective_user.id).status
-    if chat_member_status in ADMIN_ROLES:
-        user.is_admin = True
-    else:
-        user.is_admin = False
+
+    user.is_admin = True if chat_member_status in ADMIN_ROLES else False
     user.save()
     # If API returns !== 201, it means that user was already created in DB or something is wrong
     # with configuration
@@ -124,14 +122,18 @@ def done_signup(update: Update, context: CallbackContext) -> int:
     if status_code == 201:
         user.address = response['address']
         user.save()
-
-    update.message.reply_text(
-        f"Your configuration: {user_data_to_str(user)}\n",
-        reply_markup=ReplyKeyboardRemove(),
-    )
+        update.message.reply_text(
+            f"Your configuration: {user_data_to_str(user)}\n",
+            reply_markup=ReplyKeyboardRemove(),
+        )
+    else:
+        update.message.reply_text(
+            "Something went wrong with configuration. Please, try again or try /update_wallet",
+            reply_markup=ReplyKeyboardRemove(),
+        )
     return ConversationHandler.END
 
-#
+# TODO: Not sure if this functionality is needed
 # @only_if_channel_configured
 # @only_registered_users
 # def check_signup(update: Update, context: CallbackContext) -> int:

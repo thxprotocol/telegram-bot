@@ -37,3 +37,11 @@ def update():
         effective_chat=MagicMock(type=CHAT_PRIVATE),
         effective_user=MagicMock(id=1),
     )
+
+
+@pytest.fixture
+def configured_channel():
+    channel = Channel(
+        client_id=1, channel_id=1, client_secret="somes_secret", pool_address="0x123123",
+    )
+    channel.save()
