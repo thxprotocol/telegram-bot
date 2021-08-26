@@ -44,6 +44,9 @@ def start_updating_wallet(update: Update, context: CallbackContext) -> int:
 @only_in_private_chat
 def regular_choice_wallet_update(update: Update, context: CallbackContext) -> int:
     text = update.message.text.lower()
+    if text not in REPLY_OPTION_TO_DB_KEY.keys():
+        update.message.reply_text("Unknown choice. Please, click on inline buttons with choices")
+        return ConversationHandler.END
     context.user_data['choice'] = text
     user = User.collection.find_one({'user_id': update.effective_user.id})
     if user and user.get(REPLY_OPTION_TO_DB_KEY[text]):

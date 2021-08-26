@@ -45,3 +45,14 @@ def configured_channel():
         client_id=1, channel_id=1, client_secret="somes_secret", pool_address="0x123123",
     )
     channel.save()
+
+
+@pytest.fixture
+def registered_user(configured_channel):
+    user = User(
+        email="a@gmail.com", password=b"qwerty12345", address="0x123123123", user_id=1,
+    )
+    user.save()
+    channel = Channel(Channel.collection.find_one({}))
+    channel.users = [user._id]
+    channel.save()

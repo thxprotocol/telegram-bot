@@ -69,8 +69,6 @@ For signup:
 Send a one\-time login link for you wallet\(after signup is completed\)
 _Make sure to link your new wallet address with_ \/update\_wallet
 \/login\_wallet
-Link an existing THX wallet:
-\/update\_wallet
     """)
     if context.args:
         context.user_data['channel_id'] = context.args[0]
