@@ -1,0 +1,25 @@
+version: "3.4"
+
+services:
+  thx_tg_bot:
+    environment:
+      SECRET_KEY: iXymSxjXeWJFVOCeiIGY1uWvnERJx4bTk43orowhY1E=
+      MONGODB_USERNAME: root
+      MONGODB_PASSWORD: password
+      MONGODB_HOSTNAME: mongodb
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/thx_tg
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+    ports:
+      - "27017:27017"
