@@ -29,4 +29,4 @@ SECRET_KEY=<SECRET_KEY>
 3. Run `docker-compose build`
 4. Run `docker-compose up`
 
-You are all set!
+You are all set! Now, open you Telegram application, invite bot to your channel and start setting things!
