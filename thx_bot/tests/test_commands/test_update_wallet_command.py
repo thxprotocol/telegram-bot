@@ -1,6 +1,5 @@
 from unittest.mock import MagicMock
 
-import responses
 from telegram.constants import CHAT_PRIVATE
 from telegram.ext import ConversationHandler
 
@@ -11,8 +10,6 @@ from thx_bot.commands.update_wallet import received_information_wallet_update
 from thx_bot.commands.update_wallet import regular_choice_wallet_update
 from thx_bot.commands.update_wallet import start_updating_wallet
 from thx_bot.models.users import User
-from thx_bot.services.thx_api_client import MEMBERS_URL
-from thx_bot.services.thx_api_client import URL_GET_TOKEN
 
 
 def test_start_update_wallet(with_db, registered_user, configured_channel, update, context):
@@ -47,14 +44,9 @@ def test_wallet_updated(
     assert user is not None
 
 
-@responses.activate
 def test_done_wallet_update(
         with_db, registered_user, configured_channel, update, context):
     user = User.collection.find_one({})
-
-    responses.add(responses.POST, URL_GET_TOKEN, json={'access_token': 123}, status=200)
-    responses.add(
-        responses.PATCH, f"{MEMBERS_URL}{user['address']}", json={}, status=200)
 
     # First, update user address in DB
     update.message = MagicMock(text="Wallet Update")
@@ -67,7 +59,7 @@ def test_done_wallet_update(
     )
     received_information_wallet_update(info_update, context)
     assert done_wallet_update(info_update, context) == ConversationHandler.END
-    # Make sure user's address is updated after successful API call
+    # Make sure user's address is updated
     user = User.collection.find_one({'address': "0x99999"})
     assert user is not None
 

@@ -11,6 +11,7 @@ from thx_bot.models.channels import Channel
 from thx_bot.models.users import User
 from thx_bot.services.thx_api_client import create_withdraw
 from thx_bot.services.thx_api_client import get_asset_pool_info
+from thx_bot.services.thx_api_client import get_member
 from thx_bot.services.thx_api_client import get_pool_rewards
 from thx_bot.services.thx_api_client import give_reward
 from thx_bot.validators import only_chat_admin
@@ -131,27 +132,3 @@ def pool_show_rewards_command(update: Update, context: CallbackContext) -> None:
         rewards += f"ID: {reward['id']} - rewards size: {reward['withdrawAmount']} {token}\n"
     update.message.reply_text(rewards)
     return ConversationHandler.END
-
-
-@only_if_channel_configured
-@only_registered_users
-@only_in_private_chat
-def give_reward_command(update: Update, context: CallbackContext) -> None:
-    channel = Channel(
-        Channel.collection.find_one({'channel_id': context.user_data.get('channel_id')})
-    )
-    status, response = give_reward(
-        User(User.collection.find_one({'user_id': update.effective_user.id})),
-        channel,
-    )
-    if status != 200:
-        update.message.reply_text("Failed to give reward")
-        return ConversationHandler.END
-    withdrawal = response['withdrawal']
-    withdraw_status, response = create_withdraw(channel=channel, withdrawal=withdrawal)
-    if withdraw_status != 200:
-        update.message.reply_text("Failed to give reward")
-        return ConversationHandler.END
-    update.message.reply_text(
-        "You got new reward!!!"
-    )

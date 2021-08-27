@@ -21,10 +21,10 @@ from thx_bot.commands.create_wallet import done_signup
 from thx_bot.commands.create_wallet import received_information_signup
 from thx_bot.commands.create_wallet import regular_choice_signup
 from thx_bot.commands.create_wallet import start_creating_wallet
+from thx_bot.commands.get_member import get_member_info
 from thx_bot.commands.help_command import help_command
 from thx_bot.commands.login_wallet import login_wallet
 from thx_bot.commands.pool_rewards import done_rewards
-from thx_bot.commands.pool_rewards import give_reward_command
 from thx_bot.commands.pool_rewards import pool_show_rewards_command
 from thx_bot.commands.pool_rewards import received_information_reward
 from thx_bot.commands.pool_rewards import regular_choice_reward
@@ -38,8 +38,6 @@ from thx_bot.commands.update_wallet import done_wallet_update
 from thx_bot.commands.update_wallet import received_information_wallet_update
 from thx_bot.commands.update_wallet import regular_choice_wallet_update
 from thx_bot.commands.update_wallet import start_updating_wallet
-from thx_bot.models.channels import Channel
-from thx_bot.models.users import User
 
 
 def setup(update: Update, context: CallbackContext) -> None:
@@ -69,6 +67,8 @@ For signup:
 Send a one\-time login link for you wallet\(after signup is completed\)
 _Make sure to link your new wallet address with_ \/update\_wallet
 \/login\_wallet
+Check your wallet balance:
+\/get\_my\_info
     """)
     if context.args:
         context.user_data['channel_id'] = context.args[0]
@@ -175,13 +175,7 @@ def main() -> None:
     dispatcher.add_handler(CommandHandler("setup", setup))
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("login_wallet", login_wallet))
-    dispatcher.add_handler(CommandHandler("get_reward", give_reward_command))
-    # channels = Channel.collection.remove({})
-    # users = User.collection.remove({})
-    channels = Channel.collection.find({})
-    users = User.collection.find({})
-    print(list(channels))
-    print(list(users))
+    dispatcher.add_handler(CommandHandler("get_my_info", get_member_info))
     updater.start_polling()
     updater.idle()
 

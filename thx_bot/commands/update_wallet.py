@@ -8,9 +8,7 @@ from telegram.ext import ConversationHandler
 from thx_bot.commands import CHOOSING_WALLET_UPDATE
 from thx_bot.commands import TYPING_REPLY_WALLET_UPDATE
 from thx_bot.commands import user_data_to_str
-from thx_bot.models.channels import Channel
 from thx_bot.models.users import User
-from thx_bot.services.thx_api_client import send_update_wallet
 from thx_bot.validators import only_chat_user
 from thx_bot.validators import only_if_channel_configured
 from thx_bot.validators import only_in_private_chat
@@ -96,20 +94,12 @@ def done_wallet_update(update: Update, context: CallbackContext) -> int:
         del context.user_data['choice']
 
     user = User(User.collection.find_one({'user_id': update.effective_user.id}))
-    channel = Channel(Channel.collection.find_one_and_update(
-        {'channel_id': context.user_data.get('channel_id')},
-        {'$addToSet': {'users': user._id}},
-        return_document=ReturnDocument.AFTER
-    ))
-    # If API returns !== 200, it means that user was already created in DB or something is wrong
-    # with configuration
     if not user.new_address:
         update.message.reply_text("Please, set new address!")
         return TYPING_REPLY_WALLET_UPDATE
-    status_code, response = send_update_wallet(user, channel)
-    if status_code == 200:
-        user.address = user.new_address
-        user.save()
+
+    user.address = user.new_address
+    user.save()
 
     update.message.reply_text(
         f"Your configuration: {user_data_to_str(user)}\n",
