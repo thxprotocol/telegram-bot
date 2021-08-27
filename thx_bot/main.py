@@ -25,7 +25,7 @@ from thx_bot.commands.help_command import help_command
 from thx_bot.commands.login_wallet import login_wallet
 from thx_bot.commands.pool_rewards import done_rewards
 from thx_bot.commands.pool_rewards import give_reward_command
-from thx_bot.commands.pool_rewards import pool_rewards_command
+from thx_bot.commands.pool_rewards import pool_show_rewards_command
 from thx_bot.commands.pool_rewards import received_information_reward
 from thx_bot.commands.pool_rewards import regular_choice_reward
 from thx_bot.commands.pool_rewards import rewards_entrypoint
@@ -163,7 +163,7 @@ def main() -> None:
         },
         fallbacks=[  # noqa
             MessageHandler(Filters.regex('^Done$'), done_rewards),
-            MessageHandler(Filters.regex('^Show rewards$'), pool_rewards_command),
+            MessageHandler(Filters.regex('^Show rewards$'), pool_show_rewards_command),
         ],  # noqa
         name="rewards",
         persistent=False,

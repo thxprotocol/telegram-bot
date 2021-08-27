@@ -46,6 +46,10 @@ def rewards_entrypoint(update: Update, context: CallbackContext) -> int:
 @only_in_private_chat
 def regular_choice_reward(update: Update, context: CallbackContext) -> int:
     text = update.message.text.lower()
+    if text not in REPLY_OPTION_TO_DB_KEY.keys():
+        update.message.reply_text("Unknown choice. Please, click on inline buttons with choices")
+        return ConversationHandler.END
+    text = update.message.text.lower()
     context.user_data['choice'] = text
     reply_text = "Please, specify reward ID that will be used for you chat:"
     update.message.reply_text(reply_text)
@@ -57,9 +61,16 @@ def regular_choice_reward(update: Update, context: CallbackContext) -> int:
 @only_in_private_chat
 @only_if_channel_configured
 def received_information_reward(update: Update, context: CallbackContext) -> int:
-    text = update.message.text
+    try:
+        text = int(update.message.text)
+    except ValueError:
+        update.message.reply_text(
+            "Please, specify valid reward id",
+            reply_markup=MARKUP,
+        )
+        return CHOOSING_REWARDS
     category = context.user_data['choice']
-    context.user_data[category] = text.lower()
+    context.user_data[category] = text
     del context.user_data['choice']
 
     channel = Channel.collection.find_one_and_update(
@@ -100,17 +111,22 @@ def done_rewards(update: Update, context: CallbackContext) -> int:
 @only_if_channel_configured
 @only_chat_admin
 @only_in_private_chat
-def pool_rewards_command(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text(
-        "🏆 List of pool rewards:"
-    )
+def pool_show_rewards_command(update: Update, context: CallbackContext) -> None:
     channel = Channel(
         Channel.collection.find_one({'channel_id': context.user_data.get('channel_id')})
     )
-    __, rewards_response = get_pool_rewards(channel)
-    __, pool_info = get_asset_pool_info(channel)
+    status, rewards_response = get_pool_rewards(channel)
+    pool_status, pool_info = get_asset_pool_info(channel)
+
+    if status != 200 or pool_status != 200:
+        update.message.reply_text("Your pool is not configured or pool has no rewards")
+        return ConversationHandler.END
+
     rewards = ""
     token = pool_info['token']['symbol']  # noqa
+    update.message.reply_text(
+        "🏆 List of pool rewards:"
+    )
     for reward in rewards_response:
         rewards += f"ID: {reward['id']} - rewards size: {reward['withdrawAmount']} {token}\n"
     update.message.reply_text(rewards)
@@ -128,8 +144,14 @@ def give_reward_command(update: Update, context: CallbackContext) -> None:
         User(User.collection.find_one({'user_id': update.effective_user.id})),
         channel,
     )
+    if status != 200:
+        update.message.reply_text("Failed to give reward")
+        return ConversationHandler.END
     withdrawal = response['withdrawal']
-    status, response = create_withdraw(channel=channel, withdrawal=withdrawal)
+    withdraw_status, response = create_withdraw(channel=channel, withdrawal=withdrawal)
+    if withdraw_status != 200:
+        update.message.reply_text("Failed to give reward")
+        return ConversationHandler.END
     update.message.reply_text(
-        "HERE IS YOUR REWARD"
+        "You got new reward!!!"
     )

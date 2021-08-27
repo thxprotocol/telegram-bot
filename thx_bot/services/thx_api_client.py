@@ -72,7 +72,7 @@ def get_pool_rewards(
 def give_reward(user: User, channel: Channel) -> Tuple[int, Dict[str, str]]:
     __, token_response = get_api_token(channel)
     token = token_response['access_token']
-    url = f"{URL_POOL_REWARDS}{channel.reward}/give"
+    url = f"{URL_POOL_REWARDS}{int(channel.reward)}/give"
     response = requests.post(
         url,
         data={
