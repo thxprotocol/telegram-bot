@@ -132,27 +132,3 @@ def done_signup(update: Update, context: CallbackContext) -> int:
             reply_markup=ReplyKeyboardRemove(),
         )
     return ConversationHandler.END
-
-# TODO: Not sure if this functionality is needed
-# @only_if_channel_configured
-# @only_registered_users
-# def check_signup(update: Update, context: CallbackContext) -> int:
-#     channel = Channel.collection.find_one(
-#         {'channel_id': context.user_data.get('channel_id')}
-#     )
-#     # Check that user was added to channel, so they can use chat secret to query API
-#     user = User.collection.find_one(
-#         {'user_id': update.effective_user.id, '_id': {'$in': channel.get('users', [])}},
-#     )
-#     status_code, response = get_member(User(user), Channel(channel))
-#     if status_code == 200:
-#         update.message.reply_text(
-#             f"✨ ✨ ✨  Your user with wallet {response['address']} is attached to asset pool!\n"
-#             " You can claim rewards now!"
-#         )
-#     else:
-#         update.message.reply_text(
-#             "⛔⛔⛔  Oops. Something is wrong with configuration. "
-#             "Please, check you wallet address "
-#         )
-#     return ConversationHandler.END
