@@ -62,7 +62,6 @@ def test_received_information_password(with_db, configured_channel, update, cont
 
 @responses.activate
 def test_done_signup(with_db, configured_channel, update, context):
-    # Pre-create user
     responses.add(responses.POST, URL_GET_TOKEN, json={'access_token': 123}, status=200)
     responses.add(responses.POST, URL_SIGNUP, json={'address': "0x123123"}, status=201)
     user = User(

@@ -69,6 +69,10 @@ def start_kyu(update: Update, context: CallbackContext) -> int:
 @only_registered_users
 @only_users_without_reward
 def regular_choice_kyu(update: Update, context: CallbackContext) -> int:
+    text = update.message.text.lower()
+    if text not in REPLY_OPTION_TO_DB_KEY.keys():
+        update.message.reply_text("Unknown choice. Please, click on inline buttons with choices")
+        return ConversationHandler.END
     text = update.message.text
     context.user_data['choice'] = text
     update.message.reply_text(f"Please, tell me your {REPLY_OPTION_TO_HUMAN_READABLE_VALUE[text]}!")
@@ -142,5 +146,11 @@ def done_kyu(update: Update, context: CallbackContext) -> int:
             update.message.reply_text("You acquired reward!")
             know_your_user_obj.reward_acquired = True
             know_your_user_obj.save()
+            context.bot.send_message(
+                context.user_data['channel_id'],
+                "Hey chat! This is THX Bot speaking."
+                f"Please, welcome: {update.effective_user.name}! \n"
+                f"Here are some facts about them: {user_data_to_str(know_your_user)}"
+            )
 
     return ConversationHandler.END

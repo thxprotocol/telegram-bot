@@ -163,12 +163,14 @@ def only_users_without_reward(f):
         """
         Allow to run f function only to users who didn't get reward yet
         """
-        know_your_user = KnowYourUser(KnowYourUser.collection.find_one(
+        know_your_user = KnowYourUser.collection.find_one(
             {'user_id': update.effective_user.id,
              'channel_id': context.user_data.get('channel_id')},
-        ))
-        if know_your_user.reward_acquired:
-            update.message.reply_text(USER_ACK_REWARD)
-            return
+        )
+        if know_your_user:
+            know_your_user_obj = KnowYourUser(know_your_user)
+            if know_your_user_obj.reward_acquired:
+                update.message.reply_text(USER_ACK_REWARD)
+                return
         return f(update, context)
     return wrapper

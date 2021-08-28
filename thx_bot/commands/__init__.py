@@ -7,7 +7,7 @@ CHOOSING_WALLET_UPDATE, TYPING_REPLY_WALLET_UPDATE = range(5, 7)
 CHOOSING_KYU, TYPING_REPLY_KYU = range(10, 12)
 
 
-NON_VISIBLE_KEYS = ["channel_id", "user_id", "_id", "users", "password"]
+NON_VISIBLE_KEYS = ["channel_id", "user_id", "_id", "users", "password", "reward_acquired"]
 
 
 def user_data_to_str(user_data: Dict[str, str]) -> str:

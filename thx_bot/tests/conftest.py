@@ -7,12 +7,14 @@ from telegram.constants import CHAT_PRIVATE
 from thx_bot.models import mongo_client
 from thx_bot.models.channels import Channel
 from thx_bot.models.users import User
+from thx_bot.models.know_your_user import KnowYourUser
 
 
 def purge_database() -> None:
     User.collection = mongo_client.test_db.users
     Channel.collection = mongo_client.test_db.channels
-    for model in [User, Channel]:
+    KnowYourUser.collection = mongo_client.test_db.know_your_users
+    for model in [User, Channel, KnowYourUser]:
         model.collection.remove({})
 
 
@@ -43,6 +45,15 @@ def update():
 def configured_channel():
     channel = Channel(
         client_id=1, channel_id=1, client_secret="somes_secret", pool_address="0x123123",
+    )
+    channel.save()
+
+
+@pytest.fixture
+def configured_channel_with_reward():
+    channel = Channel(
+        client_id=1, channel_id=1, client_secret="somes_secret", pool_address="0x123123",
+        reward=1,
     )
     channel.save()
 

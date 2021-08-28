@@ -13,6 +13,7 @@ from telegram.constants import CHAT_SUPERGROUP
 
 from thx_bot.constants import ADMIN_ROLES
 from thx_bot.models.channels import Channel
+from thx_bot.models.know_your_user import KnowYourUser
 from thx_bot.models.users import User
 from thx_bot.validators import only_chat_admin
 from thx_bot.validators import only_chat_user
@@ -20,6 +21,7 @@ from thx_bot.validators import only_if_channel_configured
 from thx_bot.validators import only_in_private_chat
 from thx_bot.validators import only_registered_users
 from thx_bot.validators import only_unregistered_users
+from thx_bot.validators import only_users_without_reward
 
 
 @only_chat_admin
@@ -49,6 +51,11 @@ def only_unregistered_users_function(_, __) -> bool:
 
 @only_registered_users
 def only_registered_users_function(_, __) -> bool:
+    return True
+
+
+@only_users_without_reward
+def only_users_without_reward_function(_, __) -> bool:
     return True
 
 
@@ -173,3 +180,25 @@ def test_registered_users(with_db, func, expected_output):
     )
     channel.save()
     assert func(update, context) == expected_output
+
+
+def test_only_if_user_has_no_reward(with_db):
+    update = MagicMock(effective_user=MagicMock(id=1))
+    context = MagicMock(user_data={'channel_id': 1})
+    kyu = KnowYourUser(user_id=1, channel_id=1, reward_acquired=False)
+    kyu.save()
+    assert only_users_without_reward_function(update, context)
+
+
+def test_only_if_user_has_no_reward_unhappy_path(with_db):
+    update = MagicMock(effective_user=MagicMock(id=1))
+    context = MagicMock(user_data={'channel_id': 1})
+    kyu = KnowYourUser(user_id=1, channel_id=1, reward_acquired=True)
+    kyu.save()
+    assert not only_users_without_reward_function(update, context)
+
+
+def test_only_if_user_has_no_reward__no_kyu(with_db):
+    update = MagicMock(effective_user=MagicMock(id=1))
+    context = MagicMock(user_data={'channel_id': 1})
+    assert only_users_without_reward_function(update, context)
