@@ -2,8 +2,7 @@ from telegram import Update
 from telegram.ext import CallbackContext
 
 
-def help_command(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text("""
+HELP_TEMPLATE = """
 🤖     🤖     🤖
 *Admin Actions:*
 Connect your channel to work with THX API
@@ -17,4 +16,10 @@ For signup:
 Send a one\-time login link for you wallet\(after signup is completed\)
 _Make sure to link your new wallet address with_ \/update\_wallet
 \/login\_wallet
-""", parse_mode='MarkdownV2')
+Check your wallet balance:
+\/get\_my\_info
+"""
+
+
+def help_command(update: Update, context: CallbackContext) -> None:
+    update.message.reply_text(HELP_TEMPLATE, parse_mode='MarkdownV2')
