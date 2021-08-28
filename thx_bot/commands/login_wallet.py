@@ -9,9 +9,9 @@ from thx_bot.validators import only_in_private_chat
 from thx_bot.validators import only_registered_users
 
 
-@only_registered_users
 @only_if_channel_configured
 @only_in_private_chat
+@only_registered_users
 def login_wallet(update: Update, context: CallbackContext) -> None:
     update.message.reply_text(
         "✉️Please, check you email for THX wallet activation link"

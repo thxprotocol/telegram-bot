@@ -18,6 +18,10 @@ _Make sure to link your new wallet address with_ \/update\_wallet
 \/login\_wallet
 Check your wallet balance:
 \/get\_my\_info
+
+*Tell us about yourself and earn rewards\! Once you complete the survey, it will be posted 
+the channel and you will receive reward\!*
+/\introduce
 """
 
 

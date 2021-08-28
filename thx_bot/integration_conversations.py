@@ -53,6 +53,8 @@ register_channel_conversation = ConversationHandler(
     name="register_channel",
     persistent=False,
 )
+
+
 create_wallet_conversation = ConversationHandler(
     entry_points=[CommandHandler('create_wallet', start_creating_wallet)],  # noqa
     states={  # noqa
@@ -74,6 +76,8 @@ create_wallet_conversation = ConversationHandler(
     name="create_wallet",
     persistent=False,
 )
+
+
 update_wallet_conversation = ConversationHandler(
     entry_points=[CommandHandler('update_wallet', start_updating_wallet)],  # noqa
     states={  # noqa
@@ -95,6 +99,7 @@ update_wallet_conversation = ConversationHandler(
     name="update_wallet",
     persistent=False,
 )
+
 
 rewards_conversation = ConversationHandler(
     entry_points=[CommandHandler('rewards', rewards_entrypoint)],  # noqa

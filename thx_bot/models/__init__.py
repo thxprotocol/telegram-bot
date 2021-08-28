@@ -1,9 +1,7 @@
 import os
-from typing import Optional
 
 from bson import ObjectId
 from pymongo import MongoClient
-
 
 mongo_client = MongoClient(
     f"mongodb://{os.getenv('MONGODB_USERNAME')}:"
@@ -23,7 +21,7 @@ class Model(dict):
             self.collection.insert(self)
         else:
             self.collection.update(
-                { "_id": ObjectId(self._id) }, self)
+                {"_id": ObjectId(self._id)}, self)
 
     def reload(self):
         if self._id:

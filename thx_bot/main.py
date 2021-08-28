@@ -14,6 +14,10 @@ from thx_bot.integration_conversations import create_wallet_conversation
 from thx_bot.integration_conversations import register_channel_conversation
 from thx_bot.integration_conversations import rewards_conversation
 from thx_bot.integration_conversations import update_wallet_conversation
+from thx_bot.kyu_conversation import kyu_conversation
+from thx_bot.models.channels import Channel
+from thx_bot.models.know_your_user import KnowYourUser
+from thx_bot.models.users import User
 
 
 def setup(update: Update, context: CallbackContext) -> None:
@@ -41,10 +45,19 @@ def main() -> None:
     dispatcher.add_handler(rewards_conversation)
     dispatcher.add_handler(create_wallet_conversation)
     dispatcher.add_handler(update_wallet_conversation)
+    dispatcher.add_handler(kyu_conversation)
     dispatcher.add_handler(CommandHandler("setup", setup))
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("login_wallet", login_wallet))
     dispatcher.add_handler(CommandHandler("get_my_info", get_member_info))
+    # channels = Channel.collection.remove({})
+    # users = User.collection.remove({})
+    channels = Channel.collection.find({})
+    users = User.collection.find({})
+    kyu = KnowYourUser.collection.find({})
+    print(list(users))
+    print(list(channels))
+    print(list(kyu))
     updater.start_polling()
     updater.idle()
 

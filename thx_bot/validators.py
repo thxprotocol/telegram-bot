@@ -8,6 +8,7 @@ from telegram.ext import CallbackContext
 
 from thx_bot.constants import ADMIN_ROLES
 from thx_bot.models.channels import Channel
+from thx_bot.models.know_your_user import KnowYourUser
 from thx_bot.models.users import User
 from thx_bot.utils import is_channel_configured
 from thx_bot.utils import is_user_signed_up
@@ -39,6 +40,10 @@ USER_SIGNED_UP = """
 
 USER_NOT_SIGNED_UP = """
 ⛔️You can use this command yet. First you need to /create_wallet !
+"""
+
+USER_ACK_REWARD = """
+⛔️You have already get your reward. You cannot do it again!
 """
 
 
@@ -147,6 +152,23 @@ def only_registered_users(f):
         user_obj = User(user) if user else None
         if not is_user_signed_up(user_obj):
             update.message.reply_text(USER_NOT_SIGNED_UP)
+            return
+        return f(update, context)
+    return wrapper
+
+
+def only_users_without_reward(f):
+    @wraps(f)
+    def wrapper(update: Update, context: CallbackContext):
+        """
+        Allow to run f function only to users who didn't get reward yet
+        """
+        know_your_user = KnowYourUser(KnowYourUser.collection.find_one(
+            {'user_id': update.effective_user.id,
+             'channel_id': context.user_data.get('channel_id')},
+        ))
+        if know_your_user.reward_acquired:
+            update.message.reply_text(USER_ACK_REWARD)
             return
         return f(update, context)
     return wrapper

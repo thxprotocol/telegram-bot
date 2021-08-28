@@ -8,16 +8,11 @@ from telegram.ext import ConversationHandler
 from thx_bot.commands import CHOOSING_REWARDS
 from thx_bot.commands import TYPING_REWARD_REPLY
 from thx_bot.models.channels import Channel
-from thx_bot.models.users import User
-from thx_bot.services.thx_api_client import create_withdraw
 from thx_bot.services.thx_api_client import get_asset_pool_info
-from thx_bot.services.thx_api_client import get_member
 from thx_bot.services.thx_api_client import get_pool_rewards
-from thx_bot.services.thx_api_client import give_reward
 from thx_bot.validators import only_chat_admin
 from thx_bot.validators import only_if_channel_configured
 from thx_bot.validators import only_in_private_chat
-from thx_bot.validators import only_registered_users
 
 OPTION_SHOW_REWARDS = "Show rewards"
 OPTION_SET_REWARD = "Set Reward"

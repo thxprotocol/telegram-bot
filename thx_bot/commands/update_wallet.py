@@ -37,9 +37,9 @@ def start_updating_wallet(update: Update, context: CallbackContext) -> int:
 
 
 @only_if_channel_configured
+@only_in_private_chat
 @only_registered_users
 @only_chat_user
-@only_in_private_chat
 def regular_choice_wallet_update(update: Update, context: CallbackContext) -> int:
     text = update.message.text.lower()
     if text not in REPLY_OPTION_TO_DB_KEY.keys():
@@ -61,9 +61,9 @@ def regular_choice_wallet_update(update: Update, context: CallbackContext) -> in
 
 
 @only_if_channel_configured
+@only_in_private_chat
 @only_registered_users
 @only_chat_user
-@only_in_private_chat
 def received_information_wallet_update(update: Update, context: CallbackContext) -> int:
     text = update.message.text
     category = context.user_data['choice']
@@ -86,9 +86,9 @@ def received_information_wallet_update(update: Update, context: CallbackContext)
 
 
 @only_if_channel_configured
+@only_in_private_chat
 @only_registered_users
 @only_chat_user
-@only_in_private_chat
 def done_wallet_update(update: Update, context: CallbackContext) -> int:
     if 'choice' in context.user_data:
         del context.user_data['choice']
