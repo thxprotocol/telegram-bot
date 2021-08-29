@@ -1,8 +1,9 @@
-# THX Telegram bot integration for Gitcoin Hackathon
+# THX Telegram Bot "Introduce Yourself" !
 ## CI and Tests
 
 | CI Status: [![Test](https://github.com/SHAKOTN/thx_tg_bot_contest/actions/workflows/main.yml/badge.svg)](https://github.com/SHAKOTN/thx_tg_bot_contest/actions/workflows/main.yml) | Latest CI runs - [Link](https://github.com/SHAKOTN/thx_tg_bot_contest/actions)|
 |---|---:
+
 
 # Link to video Demo on youtube: [Click](https://www.youtube.com/watch?v=44tKZuAVNFg)
 
@@ -17,6 +18,10 @@ Some of bot's features:
 3. Users of telegram channels(that admins preconfigured) can signup, update their wallets and receive one-time login links to THX wallet app
 4. Users of telegram channels can complete Know Your User survey and receive one time rewards by completing it.
 
+## How this bot utilizes gamification of THX Network:
+When users enter telegram group they can complete a single "Introduce Yourself` quiz and receive a reward!
+
+## Bot commands
 Short description of help info from the bot:
 ```
 🤖     🤖     🤖
