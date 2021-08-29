@@ -55,7 +55,9 @@ def regular_choice_signup(update: Update, context: CallbackContext) -> int:
         update.message.reply_text("Unknown choice. Please, click on inline buttons with choices")
         return ConversationHandler.END
     context.user_data['choice'] = text
-    user = User.collection.find_one({'user_id': update.effective_user.id})
+    user = User.collection.find_one(
+        {'user_id': update.effective_user.id, 'channel_id': context.user_data['channel_id']}
+    )
     if user and user.get(REPLY_OPTION_TO_DB_KEY[text]) and not text == OPTION_PASSWORD.lower():
         reply_text = (
             f"Your {text}? I already know the following about that: "
@@ -81,7 +83,7 @@ def received_information_signup(update: Update, context: CallbackContext) -> int
     if REPLY_OPTION_TO_DB_KEY[category] == "password":
         text = fernet.encrypt(text.encode())
     user = User.collection.find_one_and_update(
-        {'user_id': update.effective_user.id},
+        {'user_id': update.effective_user.id, 'channel_id': context.user_data['channel_id']},
         {'$set': {REPLY_OPTION_TO_DB_KEY[category]: text}},
         # Create new document in case there is none
         upsert=True,
@@ -104,7 +106,9 @@ def done_signup(update: Update, context: CallbackContext) -> int:
     if 'choice' in context.user_data:
         del context.user_data['choice']
 
-    user = User(User.collection.find_one({'user_id': update.effective_user.id}))
+    user = User(User.collection.find_one(
+        {'user_id': update.effective_user.id, 'channel_id': context.user_data['channel_id']}
+    ))
     channel = Channel(Channel.collection.find_one_and_update(
         {'channel_id': context.user_data.get('channel_id')},
         {'$addToSet': {'users': user._id}},

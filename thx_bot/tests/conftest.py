@@ -62,6 +62,7 @@ def configured_channel_with_reward():
 def registered_user(configured_channel):
     user = User(
         email="a@gmail.com", password=b"qwerty12345", address="0x123123123", user_id=1,
+        channel_id=1,
     )
     user.save()
     channel = Channel(Channel.collection.find_one({}))

@@ -133,7 +133,9 @@ def done_kyu(update: Update, context: CallbackContext) -> int:
         channel = Channel(
             Channel.collection.find_one({'channel_id': context.user_data.get('channel_id')})
         )
-        user = User(User.collection.find_one({'user_id': update.effective_user.id}))
+        user = User(User.collection.find_one(
+            {'user_id': update.effective_user.id, 'channel_id': context.user_data['channel_id']}
+        ))
         status, response = give_reward(user, channel)
         if status != 200:
             update.message.reply_text("Failed to give reward")

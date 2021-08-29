@@ -14,7 +14,8 @@ from thx_bot.validators import only_registered_users
 @only_in_private_chat
 def get_member_info(update: Update, context: CallbackContext) -> None:
     status, response = get_member(
-        User(User.collection.find_one({'user_id': update.effective_user.id})),
+        User(User.collection.find_one({'user_id': update.effective_user.id,
+                                       'channel_id': context.user_data['channel_id']})),
         Channel(Channel.collection.find_one({'channel_id': context.user_data.get('channel_id')}))
     )
     if status != 200:

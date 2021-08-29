@@ -127,9 +127,10 @@ def only_unregistered_users(f):
         """
         Allow to run f function only to users who didn't sign up yet
         """
-        channel = Channel.collection.find_one({'channel_id': context.user_data.get('channel_id')})
+        channel = Channel.collection.find_one({'channel_id': context.user_data['channel_id']})
         user = User.collection.find_one(
-            {'user_id': update.effective_user.id, '_id': {'$in': channel.get('users', [])}},
+            {'user_id': update.effective_user.id, 'channel_id': context.user_data['channel_id'],
+             '_id': {'$in': channel.get('users', [])}},
         )
         user_obj = User(user) if user else None
         if is_user_signed_up(user_obj):
@@ -145,9 +146,10 @@ def only_registered_users(f):
         """
         Allow to run f function only to users who already signed up
         """
-        channel = Channel.collection.find_one({'channel_id': context.user_data.get('channel_id')})
+        channel = Channel.collection.find_one({'channel_id': context.user_data['channel_id']})
         user = User.collection.find_one(
-            {'user_id': update.effective_user.id, '_id': {'$in': channel.get('users', [])}},
+            {'user_id': update.effective_user.id, 'channel_id': context.user_data['channel_id'],
+             '_id': {'$in': channel.get('users', [])}},
         )
         user_obj = User(user) if user else None
         if not is_user_signed_up(user_obj):

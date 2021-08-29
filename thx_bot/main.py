@@ -52,6 +52,7 @@ def main() -> None:
     dispatcher.add_handler(CommandHandler("get_my_info", get_member_info))
     # channels = Channel.collection.remove({})
     # users = User.collection.remove({})
+    # kyu = KnowYourUser.collection.remove({})
     channels = Channel.collection.find({})
     users = User.collection.find({})
     kyu = KnowYourUser.collection.find({})

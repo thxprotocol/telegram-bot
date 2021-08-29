@@ -65,7 +65,8 @@ def test_done_signup(with_db, configured_channel, update, context):
     responses.add(responses.POST, URL_GET_TOKEN, json={'access_token': 123}, status=200)
     responses.add(responses.POST, URL_SIGNUP, json={'address': "0x123123"}, status=201)
     user = User(
-        user_id=1, email="a@gmail.com", password=fernet.encrypt("qwerty".encode()), address=None,
+        user_id=1, channel_id=1, email="a@gmail.com",
+        password=fernet.encrypt("qwerty".encode()), address=None,
     )
     user.save()
     assert done_signup(update, context) == ConversationHandler.END
@@ -85,7 +86,7 @@ def test_done_signup__api_err(with_db, configured_channel, update, context):
     responses.add(responses.POST, URL_GET_TOKEN, json={'access_token': 123}, status=200)
     responses.add(responses.POST, URL_SIGNUP, json={'err': "123"}, status=400)
     user = User(
-        user_id=1, email="a@gmail.com", password=fernet.encrypt("qwerty".encode())
+        user_id=1, channel_id=1, email="a@gmail.com", password=fernet.encrypt("qwerty".encode())
     )
     user.save()
     assert done_signup(update, context) == ConversationHandler.END

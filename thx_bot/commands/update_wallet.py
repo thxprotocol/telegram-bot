@@ -46,7 +46,8 @@ def regular_choice_wallet_update(update: Update, context: CallbackContext) -> in
         update.message.reply_text("Unknown choice. Please, click on inline buttons with choices")
         return ConversationHandler.END
     context.user_data['choice'] = text
-    user = User.collection.find_one({'user_id': update.effective_user.id})
+    user = User.collection.find_one(
+        {'user_id': update.effective_user.id, 'channel_id': context.user_data['channel_id']})
     if user and user.get(REPLY_OPTION_TO_DB_KEY[text]):
         reply_text = (
             f"Your {text}? Here is your current wallet: "
@@ -71,7 +72,7 @@ def received_information_wallet_update(update: Update, context: CallbackContext)
     del context.user_data['choice']
 
     user = User.collection.find_one_and_update(
-        {'user_id': update.effective_user.id},
+        {'user_id': update.effective_user.id, 'channel_id': context.user_data['channel_id']},
         {'$set': {'new_address': text}},
         return_document=ReturnDocument.AFTER
     )
@@ -93,7 +94,9 @@ def done_wallet_update(update: Update, context: CallbackContext) -> int:
     if 'choice' in context.user_data:
         del context.user_data['choice']
 
-    user = User(User.collection.find_one({'user_id': update.effective_user.id}))
+    user = User(User.collection.find_one(
+        {'user_id': update.effective_user.id, 'channel_id': context.user_data['channel_id']}
+    ))
     if not user.new_address:
         update.message.reply_text("Please, set new address!")
         return TYPING_REPLY_WALLET_UPDATE

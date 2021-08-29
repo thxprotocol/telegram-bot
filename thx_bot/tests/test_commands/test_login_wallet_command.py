@@ -18,7 +18,8 @@ def test_login_wallet_called(with_db, update, context):
     fernet = Fernet(os.getenv("SECRET_KEY").encode())
     password = fernet.encrypt("qwerty".encode())
     user = User(
-        user_id=1, email="test@gmail.com", password=password, address="0x123123123123123123"
+        user_id=1, channel_id=1,
+        email="test@gmail.com", password=password, address="0x123123123123123123"
     )
     user.save()
     channel = Channel(

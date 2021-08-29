@@ -172,7 +172,8 @@ def test_registered_users(with_db, func, expected_output):
     context = MagicMock(user_data={'channel_id': 1})
     # User without address is considered unregistered
     user = User(
-        user_id=1, email="test@gmail.com", password="qwerty", address="0x123123123123123123"
+        user_id=1, channel_id=1, email="test@gmail.com",
+        password="qwerty", address="0x123123123123123123"
     )
     user.save()
     channel = Channel(
