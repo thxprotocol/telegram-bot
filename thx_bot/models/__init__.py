@@ -2,11 +2,18 @@ import os
 
 from bson import ObjectId
 from pymongo import MongoClient
+from pymongo.errors import ConfigurationError
 
-mongo_client = MongoClient(
-    f"mongodb://{os.getenv('MONGODB_USERNAME')}:"
-    f"{os.getenv('MONGODB_PASSWORD')}@{os.getenv('MONGODB_HOSTNAME')}"
-)
+try:
+    mongo_client = MongoClient(
+        f"mongodb+srv://{os.getenv('MONGODB_USERNAME')}:"
+        f"{os.getenv('MONGODB_PASSWORD')}@{os.getenv('MONGODB_HOSTNAME')}"
+    )
+except ConfigurationError:
+    mongo_client = MongoClient(
+        f"mongodb://{os.getenv('MONGODB_USERNAME')}:"
+        f"{os.getenv('MONGODB_PASSWORD')}@{os.getenv('MONGODB_HOSTNAME')}"
+    )
 
 
 class Model(dict):
