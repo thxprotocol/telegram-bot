@@ -4,6 +4,8 @@
 | CI Status: [![Test](https://github.com/SHAKOTN/thx_tg_bot_contest/actions/workflows/main.yml/badge.svg)](https://github.com/SHAKOTN/thx_tg_bot_contest/actions/workflows/main.yml) | Latest CI runs - [Link](https://github.com/SHAKOTN/thx_tg_bot_contest/actions)|
 |---|---:
 
+# Link to video Demo on youtube: [Click](https://www.youtube.com/watch?v=44tKZuAVNFg)
+
 ---
 
 ## What this bot is capable of doing?
@@ -38,6 +40,12 @@ the channel and you will receive reward!
 /introduce
 ```
 
+## Security
+In this project security was taken as a first priority. 
+All bot commands are wrapped into valitador-decorator functions that are checking if user or admin are signed in, if channel is properly configured or if user has given a reward already, so they cannot spam rewards infinitely.
+
+All settings and setups are happening in bot private chat that keeps certain context for the channel that you was redirected from. There is no way you can trick the bot by trying to acquire rewards for the channel that you are not member of.
+
 
 ## Setting things up
 To run this bot locally:
@@ -54,9 +62,3 @@ SECRET_KEY=<SECRET_KEY>
 4. Run `docker-compose up`
 
 You are all set!
-
-## Security
-In this project security was taken as a first priority. 
-All bot commands are wrapped into valitador-decorator functions that are checking if user or admin are signed in, if channel is properly configured or if user has given a reward already, so they cannot spam rewards infinitely.
-
-All settings and setups are happening in bot private chat that keeps certain context for the channel that you was redirected from. There is no way you can trick the bot by trying to acquire rewards for the channel that you are not member of.
