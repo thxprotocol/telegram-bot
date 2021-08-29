@@ -2,4 +2,4 @@ build:
   docker:
     bot: Dockerfile
 run:
-  bot: python thx_bot/main.py
+  bot: python main.py

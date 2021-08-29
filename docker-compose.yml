@@ -8,10 +8,10 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ./:/thx_tg
+      - ./:/thx_bot
     depends_on:
       - mongodb
-    command: ["python", "thx_bot/main.py"]
+    command: ["python", "main.py"]
 
   mongodb:
     image: mongo
