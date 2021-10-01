@@ -4,9 +4,6 @@
 | CI Status: [![Test](https://github.com/SHAKOTN/thx_tg_bot_contest/actions/workflows/main.yml/badge.svg)](https://github.com/SHAKOTN/thx_tg_bot_contest/actions/workflows/main.yml) | Latest CI runs - [Link](https://github.com/SHAKOTN/thx_tg_bot_contest/actions)|
 |---|---:
 
-
-# Link to video Demo on youtube: [Click](https://www.youtube.com/watch?v=44tKZuAVNFg)
-
 ---
 
 ## What this bot is capable of doing?
