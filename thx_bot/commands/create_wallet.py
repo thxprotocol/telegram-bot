@@ -106,9 +106,12 @@ def done_signup(update: Update, context: CallbackContext) -> int:
     if 'choice' in context.user_data:
         del context.user_data['choice']
 
-    user = User(User.collection.find_one(
+    usr = User.collection.find_one(
         {'user_id': update.effective_user.id, 'channel_id': context.user_data['channel_id']}
-    ))
+    )
+    if not usr:
+        return ConversationHandler.END
+    user = User(usr)
     channel = Channel(Channel.collection.find_one_and_update(
         {'channel_id': context.user_data.get('channel_id')},
         {'$addToSet': {'users': user._id}},
