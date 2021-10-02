@@ -1,6 +1,3 @@
-import os
-
-from cryptography.fernet import Fernet
 from pymongo import ReturnDocument
 from telegram import ReplyKeyboardMarkup
 from telegram import ReplyKeyboardRemove

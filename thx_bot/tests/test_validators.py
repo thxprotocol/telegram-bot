@@ -18,6 +18,7 @@ from thx_bot.models.users import User
 from thx_bot.validators import only_chat_admin
 from thx_bot.validators import only_chat_user
 from thx_bot.validators import only_if_channel_configured
+from thx_bot.validators import only_if_channel_configured_kick_out
 from thx_bot.validators import only_in_private_chat
 from thx_bot.validators import only_registered_users
 from thx_bot.validators import only_unregistered_users
@@ -41,6 +42,11 @@ def only_private_chat_test_function(_, __) -> bool:
 
 @only_if_channel_configured
 def only_if_channel_configured_test_function(_, __) -> bool:
+    return True
+
+
+@only_if_channel_configured_kick_out
+def only_if_channel_configured_kick_test_function(_, __) -> bool:
     return True
 
 
@@ -136,6 +142,26 @@ def test_only_if_channel_configured_unhappy_path(with_db):
     )
     channel.save()
     assert not only_if_channel_configured_test_function(update, context)
+
+
+def test_only_if_channel_configured_kick_happy_path(with_db):
+    update = MagicMock()
+    context = MagicMock(user_data={'channel_id': 1})
+    channel = Channel(
+        token="TTX", threshold_balance=123, channel_id=1,
+    )
+    channel.save()
+    assert only_if_channel_configured_kick_test_function(update, context)
+
+
+def test_only_if_channel_configured_kick_unhappy_path(with_db):
+    update = MagicMock()
+    context = MagicMock(user_data={'channel_id': 1})
+    channel = Channel(
+        token="TTX", channel_id=1,
+    )
+    channel.save()
+    assert not only_if_channel_configured_kick_test_function(update, context)
 
 
 @pytest.mark.parametrize(

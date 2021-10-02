@@ -121,6 +121,25 @@ def only_if_channel_configured(f):
     return wrapper
 
 
+def only_if_channel_configured_kick_out(f):
+    @wraps(f)
+    def wrapper(update: Update, context: CallbackContext):
+        """
+        Allow to manipulate with configuration only in case admin has already set up channel with
+        kick out configuration
+        """
+        channel = Channel.collection.find_one({'channel_id': context.user_data.get('channel_id')})
+        channel_obj = Channel(channel) if channel else None
+        is_channel_set = all(
+            [channel_obj.token, channel_obj.threshold_balance]
+        ) if channel else False
+
+        if not channel_obj or not is_channel_set:
+            return
+        return f(update, context)
+    return wrapper
+
+
 def only_unregistered_users(f):
     @wraps(f)
     def wrapper(update: Update, context: CallbackContext):

@@ -36,7 +36,7 @@ def context():
 @pytest.fixture
 def update():
     return MagicMock(
-        effective_chat=MagicMock(type=CHAT_PRIVATE),
+        effective_chat=MagicMock(type=CHAT_PRIVATE, id=1),
         effective_user=MagicMock(id=1),
     )
 
@@ -45,6 +45,7 @@ def update():
 def configured_channel():
     channel = Channel(
         client_id=1, channel_id=1, client_secret="somes_secret", pool_address="0x123123",
+        token="THX", threshold_balance=100,
     )
     channel.save()
 
