@@ -145,8 +145,8 @@ def test_only_if_channel_configured_unhappy_path(with_db):
 
 
 def test_only_if_channel_configured_kick_happy_path(with_db):
-    update = MagicMock()
-    context = MagicMock(user_data={'channel_id': 1})
+    update = MagicMock(effective_chat=MagicMock(id=1))
+    context = MagicMock()
     channel = Channel(
         token="TTX", threshold_balance=123, channel_id=1,
     )
@@ -155,8 +155,8 @@ def test_only_if_channel_configured_kick_happy_path(with_db):
 
 
 def test_only_if_channel_configured_kick_unhappy_path(with_db):
-    update = MagicMock()
-    context = MagicMock(user_data={'channel_id': 1})
+    update = MagicMock(effective_chat=MagicMock(id=1))
+    context = MagicMock()
     channel = Channel(
         token="TTX", channel_id=1,
     )

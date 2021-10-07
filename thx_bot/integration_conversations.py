@@ -6,15 +6,22 @@ from telegram.ext import MessageHandler
 from thx_bot.commands import CHOOSING
 from thx_bot.commands import CHOOSING_REWARDS
 from thx_bot.commands import CHOOSING_SIGNUP
+from thx_bot.commands import CHOOSING_TOKENS
 from thx_bot.commands import CHOOSING_WALLET_UPDATE
 from thx_bot.commands import TYPING_REPLY
 from thx_bot.commands import TYPING_REPLY_SIGNUP
 from thx_bot.commands import TYPING_REPLY_WALLET_UPDATE
 from thx_bot.commands import TYPING_REWARD_REPLY
+from thx_bot.commands import TYPING_TOKENS_REPLY
 from thx_bot.commands.create_wallet import done_signup
 from thx_bot.commands.create_wallet import received_information_signup
 from thx_bot.commands.create_wallet import regular_choice_signup
 from thx_bot.commands.create_wallet import start_creating_wallet
+from thx_bot.commands.entrance import done_permission
+from thx_bot.commands.entrance import permissions_entrypoint
+from thx_bot.commands.entrance import received_permission_amount
+from thx_bot.commands.entrance import regular_choice_permissions
+from thx_bot.commands.entrance import show_entrance_permision_for_channel
 from thx_bot.commands.pool_rewards import done_rewards
 from thx_bot.commands.pool_rewards import pool_show_rewards_command
 from thx_bot.commands.pool_rewards import received_information_reward
@@ -121,5 +128,29 @@ rewards_conversation = ConversationHandler(
         MessageHandler(Filters.regex('^Show rewards$'), pool_show_rewards_command),
     ],  # noqa
     name="rewards",
+    persistent=False,
+)
+
+entrance_tokens_conversation = ConversationHandler(
+    entry_points=[CommandHandler('entrance', permissions_entrypoint)],
+    states={  # noqa
+        CHOOSING_TOKENS: [
+            MessageHandler(
+                Filters.regex('^Set entrance amount$'), regular_choice_permissions
+            ),
+        ],
+        TYPING_TOKENS_REPLY: [
+            MessageHandler(
+                Filters.text & ~(Filters.command | Filters.regex('^Done$')),
+                received_permission_amount,
+            )
+        ],
+    },
+    fallbacks=[  # noqa
+        MessageHandler(Filters.regex('^Done$'), done_permission),
+        MessageHandler(
+            Filters.regex('^Show entrance configuration$'), show_entrance_permision_for_channel),
+    ],  # noqa
+    name="entrance",
     persistent=False,
 )

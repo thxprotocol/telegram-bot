@@ -128,7 +128,10 @@ def only_if_channel_configured_kick_out(f):
         Allow to manipulate with configuration only in case admin has already set up channel with
         kick out configuration
         """
-        channel = Channel.collection.find_one({'channel_id': context.user_data.get('channel_id')})
+        channel = Channel.collection.find_one({"$or": [
+            {'channel_id': str(update.effective_chat.id)},
+            {'channel_id': update.effective_chat.id},
+        ]})
         channel_obj = Channel(channel) if channel else None
         is_channel_set = all(
             [channel_obj.token, channel_obj.threshold_balance]

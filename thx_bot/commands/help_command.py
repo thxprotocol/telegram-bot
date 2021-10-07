@@ -9,6 +9,8 @@ Connect your channel to work with THX API
 \/register\_channel
 Rewards menu, to view and set rewards for your channel
 \/rewards
+Set minimum entrance amount of tokens for the users to enter your chat
+\/entrance
 
 *If you are channel user:*
 For signup:
