@@ -13,6 +13,8 @@ Set minimum entrance amount of tokens for the users to enter your chat
 \/entrance
 
 *If you are channel user:*
+If you are already THX user, add your wallet to pool:
+\/add\_me\_to\_pool
 For signup:
 \/create\_wallet
 Send a one\-time login link for you wallet\(after signup is completed\)
