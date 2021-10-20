@@ -154,11 +154,31 @@ def test_only_if_channel_configured_kick_happy_path(with_db):
     assert only_if_channel_configured_kick_test_function(update, context)
 
 
+def test_only_if_channel_configured_reward_kick_happy_path(with_db):
+    update = MagicMock(effective_chat=MagicMock(id=1))
+    context = MagicMock()
+    channel = Channel(
+        with_reward=True, channel_id=1,
+    )
+    channel.save()
+    assert only_if_channel_configured_kick_test_function(update, context)
+
+
 def test_only_if_channel_configured_kick_unhappy_path(with_db):
     update = MagicMock(effective_chat=MagicMock(id=1))
     context = MagicMock()
     channel = Channel(
         token="TTX", channel_id=1,
+    )
+    channel.save()
+    assert not only_if_channel_configured_kick_test_function(update, context)
+
+
+def test_only_if_channel_configured_no_reward_kick_unhappy_path(with_db):
+    update = MagicMock(effective_chat=MagicMock(id=1))
+    context = MagicMock()
+    channel = Channel(
+        with_reward=False, channel_id=1,
     )
     channel.save()
     assert not only_if_channel_configured_kick_test_function(update, context)

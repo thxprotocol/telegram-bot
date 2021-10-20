@@ -132,10 +132,10 @@ def only_if_channel_configured_kick_out(f):
             {'channel_id': str(update.effective_chat.id)},
             {'channel_id': update.effective_chat.id},
         ]})
-        channel_obj = Channel(channel) if channel else None
+        channel_obj = Channel(channel)
         is_channel_set = all(
             [channel_obj.token, channel_obj.threshold_balance]
-        ) if channel else False
+        ) or channel_obj.with_reward
 
         if not channel_obj or not is_channel_set:
             return

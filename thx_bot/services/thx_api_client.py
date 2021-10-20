@@ -13,7 +13,7 @@ from thx_bot.utils import fernet
 URL_GET_TOKEN = "https://api.thx.network/token"
 URL_ASSET_POOL_INFO = "https://api.thx.network/v1/asset_pools/"
 URL_POOL_REWARDS = "https://api.thx.network/v1/rewards/"
-URL_WITHDRAW = "https://api.thx.network/v1/withdrawals/"
+URL_WITHDRAW = "https://api.thx.network/v1/withdrawals"
 URL_SIGNUP = "https://api.thx.network/v1/signup"
 MEMBERS_URL = "https://api.thx.network/v1/members/"
 ACTIVATION_URL = "https://api.thx.network/v1/authentication_token"
@@ -98,6 +98,22 @@ def create_withdraw(channel: Channel, withdrawal: str) -> int:
         }
     )
     return response.status_code
+
+
+def get_withdrawals_for_member(user: User, channel: Channel):
+    if not user.address:
+        return
+    __, token_response = get_api_token(channel)
+    token = token_response['access_token']
+    # State 2 - means withdrawn
+    response = requests.get(
+        f"{URL_WITHDRAW}?member={user.address}&state=2",
+        headers={
+            'AssetPool': channel.pool_address,
+            'Authorization': f"Bearer {token}",
+        }
+    )
+    return response.status_code, response.json()
 
 
 def signup_user(user: User, channel: Channel) -> Tuple[int, Dict[str, str]]:

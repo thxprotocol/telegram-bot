@@ -23,6 +23,7 @@ from thx_bot.commands.entrance import permissions_entrypoint
 from thx_bot.commands.entrance import received_permission_amount
 from thx_bot.commands.entrance import regular_choice_permissions
 from thx_bot.commands.entrance import show_entrance_permision_for_channel
+from thx_bot.commands.entrance import toggle_users_with_rewards
 from thx_bot.commands.pool_rewards import done_rewards
 from thx_bot.commands.pool_rewards import pool_show_rewards_command
 from thx_bot.commands.pool_rewards import received_information_reward
@@ -153,6 +154,8 @@ entrance_tokens_conversation = ConversationHandler(
             Filters.regex('^Show entrance configuration$'), show_entrance_permision_for_channel),
         MessageHandler(
             Filters.regex('^Disable entrance checks$'), disable_entrance_checks),
+        MessageHandler(
+            Filters.regex('^Toggle only users with rewards$'), toggle_users_with_rewards),
     ],  # noqa
     name="entrance",
     persistent=False,

@@ -15,11 +15,13 @@ from thx_bot.validators import only_in_private_chat
 OPTION_SET_MINIMUM_TOKENS = "Set entrance amount"
 OPTION_SHOW_CONFIGURATION = "Show entrance configuration"
 OPTION_DISABLE_ENTRANCE_CHECKS = "Disable entrance checks"
+OPTION_ENABLE_USERS_WITH_REWARDS = "Toggle only users with rewards"
 
 
 REPLY_KEYBOARD = [
     [OPTION_SET_MINIMUM_TOKENS],
-    ["Done", OPTION_SHOW_CONFIGURATION, OPTION_DISABLE_ENTRANCE_CHECKS],
+    ["Done", OPTION_SHOW_CONFIGURATION, OPTION_ENABLE_USERS_WITH_REWARDS,
+     OPTION_DISABLE_ENTRANCE_CHECKS],
 ]
 
 REPLY_OPTION_TO_DB_KEY = {
@@ -145,4 +147,29 @@ def disable_entrance_checks(update: Update, context: CallbackContext):
         channel.token = None
         channel.threshold_balance = None
         channel.save()
+    return ConversationHandler.END
+
+
+@only_chat_admin
+@only_in_private_chat
+@only_if_channel_configured
+def toggle_users_with_rewards(update: Update, context: CallbackContext):
+    channel = Channel(
+        Channel.collection.find_one({'channel_id': context.user_data.get('channel_id')})
+    )
+    if any(
+        [channel.token, channel.threshold_balance]
+    ):
+        update.message.reply_text(
+            "You already have enabled entrance by token amount. These different entrance conditions"
+            "are mutually exclusive. If you want to use entrance by reward, first disable "
+            "entrance by token"
+        )
+        return 
+    channel.with_reward = not channel.with_reward
+    toggled = "switched on" if channel.with_reward else "switched off"
+    update.message.reply_text(
+        f"Channel now has {toggled} entrance with rewards only feature"
+    )
+    channel.save()
     return ConversationHandler.END
