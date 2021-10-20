@@ -17,6 +17,7 @@ from thx_bot.commands.create_wallet import done_signup
 from thx_bot.commands.create_wallet import received_information_signup
 from thx_bot.commands.create_wallet import regular_choice_signup
 from thx_bot.commands.create_wallet import start_creating_wallet
+from thx_bot.commands.entrance import disable_entrance_checks
 from thx_bot.commands.entrance import done_permission
 from thx_bot.commands.entrance import permissions_entrypoint
 from thx_bot.commands.entrance import received_permission_amount
@@ -150,6 +151,8 @@ entrance_tokens_conversation = ConversationHandler(
         MessageHandler(Filters.regex('^Done$'), done_permission),
         MessageHandler(
             Filters.regex('^Show entrance configuration$'), show_entrance_permision_for_channel),
+        MessageHandler(
+            Filters.regex('^Disable entrance checks$'), disable_entrance_checks),
     ],  # noqa
     name="entrance",
     persistent=False,
