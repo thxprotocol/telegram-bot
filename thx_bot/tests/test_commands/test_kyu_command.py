@@ -52,7 +52,7 @@ def test_done_kyu_command(
     responses.add(
         responses.POST, f"{URL_POOL_REWARDS}1/give", json={'withdrawal': "1"}, status=200)
     responses.add(
-        responses.POST, f"{URL_WITHDRAW}1/withdraw", json=None, status=200)
+        responses.POST, f"{URL_WITHDRAW}/1/withdraw", json=None, status=200)
 
     kyu = KnowYourUser(
         user_id=1, channel_id=1,
