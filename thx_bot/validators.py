@@ -121,6 +121,18 @@ def only_if_channel_configured(f):
     return wrapper
 
 
+def only_if_channel_configured_silent(f):
+    @wraps(f)
+    def wrapper(update: Update, context: CallbackContext):
+        channel = Channel.collection.find_one({'channel_id': context.user_data.get('channel_id')})
+        channel_obj = Channel(channel) if channel else None
+        is_channel_set = is_channel_configured(channel_obj) if channel else False
+        if not channel_obj or not is_channel_set:
+            return
+        return f(update, context)
+    return wrapper
+
+
 def only_if_channel_configured_kick_out(f):
     @wraps(f)
     def wrapper(update: Update, context: CallbackContext):

@@ -89,7 +89,7 @@ def give_reward(user: User, channel: Channel) -> Tuple[int, Dict[str, str]]:
 def create_withdraw(channel: Channel, withdrawal: str) -> int:
     __, token_response = get_api_token(channel)
     token = token_response['access_token']
-    url = f"{URL_WITHDRAW}{withdrawal}/withdraw"
+    url = f"{URL_WITHDRAW}/{withdrawal}/withdraw"
     response = requests.post(
         url,
         headers={
@@ -165,14 +165,14 @@ def send_login_wallet(user: User, channel: Channel) -> Tuple[int, Dict[str, str]
     return response.status_code, response.json()
 
 
-def send_update_wallet(user: User, channel: Channel) -> Tuple[int, Dict[str, str]]:
+def add_member(user: User, channel: Channel) -> Tuple[int, Dict[str, str]]:
     __, token_response = get_api_token(channel)
     token = token_response['access_token']
-    response = requests.patch(
-        f"{MEMBERS_URL}{user.address}",
+    response = requests.post(
+        f"{MEMBERS_URL}",
         data={
             'address': user.new_address,
-            'isManager': user.is_admin,
+            # 'isManager': user.is_admin,
         },
         headers={
             'AssetPool': channel.pool_address,

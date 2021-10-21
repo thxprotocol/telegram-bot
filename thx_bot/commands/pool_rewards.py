@@ -123,7 +123,8 @@ def pool_show_rewards_command(update: Update, context: CallbackContext) -> None:
     update.message.reply_text(
         "🏆 List of pool rewards:"
     )
-    for reward in rewards_response:
-        rewards += f"ID: {reward['id']} - rewards size: {reward['withdrawAmount']} {token}\n"
-    update.message.reply_text(rewards)
+    if rewards_response:
+        for reward in rewards_response:
+            rewards += f"ID: {reward['id']} - rewards size: {reward['withdrawAmount']} {token}\n"
+        update.message.reply_text(rewards)
     return ConversationHandler.END
