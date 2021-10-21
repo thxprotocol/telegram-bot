@@ -4,15 +4,21 @@ from telegram.ext import Filters
 from telegram.ext import MessageHandler
 
 from thx_bot.commands import CHOOSING
+from thx_bot.commands import CHOOSING_ADD_MEMBER
 from thx_bot.commands import CHOOSING_REWARDS
 from thx_bot.commands import CHOOSING_SIGNUP
 from thx_bot.commands import CHOOSING_TOKENS
 from thx_bot.commands import CHOOSING_WALLET_UPDATE
 from thx_bot.commands import TYPING_REPLY
+from thx_bot.commands import TYPING_REPLY_MEMBER
 from thx_bot.commands import TYPING_REPLY_SIGNUP
 from thx_bot.commands import TYPING_REPLY_WALLET_UPDATE
 from thx_bot.commands import TYPING_REWARD_REPLY
 from thx_bot.commands import TYPING_TOKENS_REPLY
+from thx_bot.commands.add_member import start_adding_member
+from thx_bot.commands.add_member import done_member_add
+from thx_bot.commands.add_member import received_information_member_add
+from thx_bot.commands.add_member import regular_choice_member_add
 from thx_bot.commands.create_wallet import done_signup
 from thx_bot.commands.create_wallet import received_information_signup
 from thx_bot.commands.create_wallet import regular_choice_signup
@@ -158,5 +164,27 @@ entrance_tokens_conversation = ConversationHandler(
             Filters.regex('^Toggle only users with rewards$'), toggle_users_with_rewards),
     ],  # noqa
     name="entrance",
+    persistent=False,
+)
+
+add_member_conversation = ConversationHandler(
+    entry_points=[CommandHandler('add_me_to_pool', start_adding_member)],  # noqa
+    states={  # noqa
+        CHOOSING_ADD_MEMBER: [
+            MessageHandler(
+                Filters.regex('^Add your wallet$'), regular_choice_member_add
+            ),
+        ],
+        TYPING_REPLY_MEMBER: [
+            MessageHandler(
+                Filters.text & ~(Filters.command | Filters.regex('^Done$')),
+                received_information_member_add,
+            )
+        ],
+    },
+    fallbacks=[  # noqa
+        MessageHandler(Filters.regex('^Done$'), done_member_add),
+    ],  # noqa
+    name="add_member",
     persistent=False,
 )

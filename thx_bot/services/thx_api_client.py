@@ -171,8 +171,7 @@ def add_member(user: User, channel: Channel) -> Tuple[int, Dict[str, str]]:
     response = requests.post(
         f"{MEMBERS_URL}",
         data={
-            'address': user.new_address,
-            # 'isManager': user.is_admin,
+            'address': user.address,
         },
         headers={
             'AssetPool': channel.pool_address,

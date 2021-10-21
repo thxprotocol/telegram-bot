@@ -13,6 +13,7 @@ from thx_bot.commands.help_command import HELP_TEMPLATE
 from thx_bot.commands.help_command import help_command
 from thx_bot.commands.kick_out import kick_out_handler
 from thx_bot.commands.login_wallet import login_wallet
+from thx_bot.integration_conversations import add_member_conversation
 from thx_bot.integration_conversations import create_wallet_conversation
 from thx_bot.integration_conversations import entrance_tokens_conversation
 from thx_bot.integration_conversations import register_channel_conversation
@@ -42,6 +43,7 @@ def main() -> None:
     dispatcher = updater.dispatcher
     dispatcher.add_handler(MessageHandler(Filters.status_update.new_chat_members, kick_out_handler))
     dispatcher.add_handler(CommandHandler("help", help_command))
+    dispatcher.add_handler(add_member_conversation)
     dispatcher.add_handler(register_channel_conversation)
     dispatcher.add_handler(rewards_conversation)
     dispatcher.add_handler(entrance_tokens_conversation)
