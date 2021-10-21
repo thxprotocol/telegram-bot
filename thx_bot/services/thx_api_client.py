@@ -107,7 +107,7 @@ def get_withdrawals_for_member(user: User, channel: Channel):
     token = token_response['access_token']
     # State 2 - means withdrawn
     response = requests.get(
-        f"{URL_WITHDRAW}?member={user.address}&state=2",
+        f"{URL_WITHDRAW}?member={user.address}&state=2&page=1&limit=20",
         headers={
             'AssetPool': channel.pool_address,
             'Authorization': f"Bearer {token}",

@@ -48,7 +48,7 @@ def kick_out_handler(update: Update, context: CallbackContext) -> None:
                 )
                 continue
             else:
-                if len(response) == 0:
+                if len(response['results']) == 0:
                     context.bot.ban_chat_member(
                         update.effective_chat.id, user_obj.id,
                         until_date=int(time()) + SECONDS_DELAY
