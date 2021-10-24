@@ -61,12 +61,17 @@ def received_information_member_add(update: Update, context: CallbackContext) ->
     context.user_data[category] = text.lower()
     del context.user_data['choice']
 
-    user = User.collection.find_one_and_update(
+    user = User(User.collection.find_one_and_update(
         {'user_id': update.effective_user.id, 'channel_id': context.user_data['channel_id']},
         {'$set': {'address': text}},
         upsert=True,
         return_document=ReturnDocument.AFTER,
-    )
+    ))
+    Channel(Channel.collection.find_one_and_update(
+        {'channel_id': context.user_data.get('channel_id')},
+        {'$addToSet': {'users': user._id}},
+        return_document=ReturnDocument.AFTER
+    ))
     update.message.reply_text(
         "Cool! Your configuration is now:"
         f"{user_data_to_str(user)}\n"
