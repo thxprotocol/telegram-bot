@@ -126,6 +126,11 @@ def show_entrance_permision_for_channel(update: Update, context: CallbackContext
             f"💰 Your channel has minimum amount of tokens required: "
             f"{channel.threshold_balance} {channel.token}"
         )
+    elif getattr(channel, "with_reward"):
+        update.message.reply_text(
+            "💰 Your channel is configured that it requires "
+            "reward to be withdrawn by all new members",
+        )
     else:
         update.message.reply_text(
             "You haven't configured minimum amount of tokens required for entrance of chat yet"
