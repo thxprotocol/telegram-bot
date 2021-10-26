@@ -19,10 +19,12 @@ Some of bot's features:
 ## How to setup your telegram group to use THX bot
 1. Invite THX Bot to your group and give it admin rights
 2. Hit `/setup` command and you will see this message with a link to the bot:
+
 ![img.png](img1.png)
 
 This is how you contextualize bot usage and how you let bot know what channel you are configuring
 3. After that you will be redirected to bot and will see a list of commands like this:
+
 ![img.png](img.png)
 
 4. Hit `register_channel` and fill all information asked by copypasting addresses and secrets from your THX pool dashboard
