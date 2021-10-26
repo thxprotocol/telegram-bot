@@ -24,5 +24,5 @@ def test_user_registered():
 def test_user_unregistered():
     assert not is_user_signed_up(
         MagicMock(email="2@gmail.com", password="secret", address=None))
-    assert not is_user_signed_up(
+    assert is_user_signed_up(
         MagicMock(email="2@gmail.com", password=None, address="0x123"))

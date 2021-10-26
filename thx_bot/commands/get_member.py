@@ -6,11 +6,9 @@ from thx_bot.models.users import User
 from thx_bot.services.thx_api_client import get_member
 from thx_bot.validators import only_if_channel_configured
 from thx_bot.validators import only_in_private_chat
-from thx_bot.validators import only_registered_users
 
 
 @only_if_channel_configured
-@only_registered_users
 @only_in_private_chat
 def get_member_info(update: Update, context: CallbackContext) -> None:
     status, response = get_member(

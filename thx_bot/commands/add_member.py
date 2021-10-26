@@ -28,7 +28,6 @@ MARKUP = ReplyKeyboardMarkup(REPLY_KEYBOARD, one_time_keyboard=True)
 
 @only_in_private_chat
 @only_if_channel_configured
-@only_chat_user
 def start_adding_member(update: Update, context: CallbackContext) -> int:
     reply_text = "💰 Please, paste wallet that you want to use to receive rewards!" \
                  "Please note, that you have to be registered in THX network already"
@@ -39,7 +38,6 @@ def start_adding_member(update: Update, context: CallbackContext) -> int:
 
 @only_if_channel_configured
 @only_in_private_chat
-@only_chat_user
 def regular_choice_member_add(update: Update, context: CallbackContext) -> int:
     text = update.message.text.lower()
     if text not in REPLY_OPTION_TO_DB_KEY.keys():
@@ -54,7 +52,6 @@ def regular_choice_member_add(update: Update, context: CallbackContext) -> int:
 
 @only_if_channel_configured
 @only_in_private_chat
-@only_chat_user
 def received_information_member_add(update: Update, context: CallbackContext) -> int:
     text = update.message.text
     category = context.user_data['choice']
@@ -84,7 +81,6 @@ def received_information_member_add(update: Update, context: CallbackContext) ->
 
 @only_if_channel_configured
 @only_in_private_chat
-@only_chat_user
 def done_member_add(update: Update, context: CallbackContext) -> int:
     if 'choice' in context.user_data:
         del context.user_data['choice']

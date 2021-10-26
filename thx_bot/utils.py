@@ -16,7 +16,7 @@ def is_channel_configured(chat: Channel) -> bool:
 def is_user_signed_up(user: User) -> bool:
     if not user:
         return False
-    return all([user.email, user.password, user.address])
+    return all([user.email, user.password, user.address]) or user.address
 
 
 def filled_all_facts(know_your_user: KnowYourUser):
