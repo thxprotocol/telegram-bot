@@ -1,4 +1,4 @@
-# THX Telegram Bot "Introduce Yourself" !
+# THX Telegram Bot !
 ## CI and Tests
 
 | CI Status: [![Test](https://github.com/SHAKOTN/thx_tg_bot_contest/actions/workflows/main.yml/badge.svg)](https://github.com/SHAKOTN/thx_tg_bot_contest/actions/workflows/main.yml) | Latest CI runs - [Link](https://github.com/SHAKOTN/thx_tg_bot_contest/actions)|
@@ -12,35 +12,33 @@ This bot is built as an integration to [THX Network](https://www.thx.network).
 Some of bot's features:
 1. Admins of Telegram channels can invite bot to their channel and configure THX integration using `/register_channel` command
 2. Admins can set reward for some specific actions users are doing `/rewards`
+3. Admins can setup minimum entrance: `/entrance` amount of tokens to the channel. Those users who enter and don't have that amount will be kicked out
 3. Users of telegram channels(that admins preconfigured) can signup, update their wallets and receive one-time login links to THX wallet app
 4. Users of telegram channels can complete Know Your User survey and receive one time rewards by completing it.
 
-## How this bot utilizes gamification of THX Network:
-When users enter telegram group they can complete a single "Introduce Yourself` quiz and receive a reward!
+## How to setup your telegram group to use THX bot
+1. Invite THX Bot to your group and give it admin rights
+2. Hit `/setup` command and you will see this message with a link to the bot:
+![img.png](img1.png)
 
-## Bot commands
-Short description of help info from the bot:
-```
-🤖     🤖     🤖
-Admin Actions:
-Connect your channel to work with THX API
-/register_channel
-Rewards menu, to view and set rewards for your channel
-/rewards
+This is how you contextualize bot usage and how you let bot know what channel you are configuring
+3. After that you will be redirected to bot and will see a list of commands like this:
+![img.png](img.png)
 
-If you are channel user:
-For signup:
-/create_wallet
-Send a one-time login link for you wallet(after signup is completed)
-Make sure to link your new wallet address with /update_wallet
-/login_wallet
-Check your wallet balance:
-/get_my_info
+4. Hit `register_channel` and fill all information asked by copypasting addresses and secrets from your THX pool dashboard
+5. After that you have two options: you can enable rewards for users who introduced themselves in a group or setup a minimum entrance balance. 
+You can even configure to use both of these features at the same time
+   
+## How to setup bot is you are group user
+1. Hit `/setup` command and you will see message as from above
+2. Redirect to the bot private channel
+3. Now you have two options:
+    - You either create a new THX wallet for youself by hitting `/create_wallet`
+    - Or hit `/add_me_to_pool` and fill up your existing THX wallet address
+    
+4. You are all set and you can start receiving rewards
 
-Tell us about yourself and earn rewards! Once you complete the survey, it will be posted 
-the channel and you will receive reward!
-/introduce
-```
+
 
 ## Security
 In this project security was taken as a first priority. 
