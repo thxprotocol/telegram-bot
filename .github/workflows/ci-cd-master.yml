@@ -16,8 +16,6 @@ jobs:
                 deploy-group: ['master']
                 s3-bucket: ['aws-deployments-bot-telegram-master']
                 s3-filename: ['bot-telegram-master-${{ github.sha }}']
-
-        needs: buildAndTest
         steps:
             - name: Checkout repository
               uses: actions/checkout@v2
