@@ -1,5 +1,5 @@
 import os
-
+from dotenv import load_dotenv
 from telegram import Update
 from telegram.ext import CallbackContext
 from telegram.ext import CommandHandler
@@ -39,6 +39,7 @@ def start(update: Update, context: CallbackContext) -> None:
 
 
 def main() -> None:
+    load_dotenv()
     updater = Updater(os.getenv("BOT_TOKEN"))
     dispatcher = updater.dispatcher
     dispatcher.add_handler(MessageHandler(Filters.status_update.new_chat_members, kick_out_handler))
